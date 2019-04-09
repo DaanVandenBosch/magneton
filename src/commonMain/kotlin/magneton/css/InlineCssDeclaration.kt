@@ -1,7 +1,7 @@
 package magneton.css
 
-import magneton.observable.Observable
-import magneton.observable.Subscription
+import magneton.observableold.Observable
+import magneton.observableold.Subscription
 
 /**
  * When you manually instantiate this class and bind observables to it via methods such as [bindWidth] you must call [unsubscribe] when you're done with it.

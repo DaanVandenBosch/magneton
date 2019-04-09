@@ -1,25 +1,36 @@
 package magneton.nodes
 
+import org.w3c.dom.DocumentFragment
 import org.w3c.dom.get
+import kotlin.browser.document
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 class RenderingTests {
     @Test
     fun render() {
         val cmp = TestComponent()
+        render(cmp)
         val domNode = cmp.domNode
 
         assertNotNull(domNode)
-        assertTrue(domNode is org.w3c.dom.HTMLDivElement)
+        assertEquals("DIV", domNode.nodeName)
         assertEquals(1, domNode.childNodes.length)
-        assertTrue(domNode.childNodes[0] is org.w3c.dom.HTMLDivElement)
+        assertEquals("DIV", domNode.childNodes[0]!!.nodeName)
+    }
+
+    @Test
+    fun renderToDom() {
+        val cmp = TestComponent()
+        val document = DocumentFragment()
+        renderToDom(document, cmp)
+
+        assertEquals(2, document.querySelectorAll("div").length)
     }
 
     class TestComponent : Component() {
-        override val root = div {
+        override fun render() = div {
             div { }
         }
     }

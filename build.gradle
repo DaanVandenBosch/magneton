@@ -25,13 +25,13 @@ wrapper {
 }
 
 kotlin {
-//    jvm {
-//        compilations.all {
-//            kotlinOptions {
-//                jvmTarget = '1.8'
-//            }
-//        }
-//    }
+    jvm {
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = '1.8'
+            }
+        }
+    }
     js {
         compilations.main {
             kotlinOptions {
@@ -119,4 +119,8 @@ kotlinFrontend {
     }
 
     define("PRODUCTION", false)
+}
+
+jvmTest {
+    maxParallelForks = 1
 }

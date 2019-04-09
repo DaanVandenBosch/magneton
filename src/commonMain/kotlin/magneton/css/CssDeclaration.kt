@@ -1,7 +1,7 @@
 package magneton.css
 
-import magneton.observable.mutableVar
-import magneton.observable.vars.Var
+import magneton.observableold.mutableVar
+import magneton.observableold.vars.Var
 
 abstract class CssDeclaration {
     private val mutableCssVar = mutableVar("")

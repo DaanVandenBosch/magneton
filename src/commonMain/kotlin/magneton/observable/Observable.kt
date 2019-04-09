@@ -1,21 +1,13 @@
 package magneton.observable
 
-/**
- * Base interface of all observable objects.
- */
-interface Observable<T> {
-    val value: T
+interface Observable {
+    val derivations: MutableList<Derivation>
+}
 
-    /**
-     * [listener] will be called whenever [value] changes.
-     */
-    fun onChange(listener: ChangeListener<T>): Subscription
+internal fun Observable.reportObserved() {
+    observedObservables.add(this)
+}
 
-    /**
-     * [listener] will be called now and whenever [value] changes.
-     */
-    fun nowAndOnChange(listener: ChangeListener<T>): Subscription {
-        listener(value)
-        return onChange(listener)
-    }
+internal fun Observable.reportChanged() {
+    changedObservables.add(this)
 }

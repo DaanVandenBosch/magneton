@@ -28,7 +28,6 @@ fun <T : Component> MNode.component(
         }
 
         val cmp = createComponent()
-        addChild(index, cmp)
 
         cmp.disposer = reaction {
             stack.push(Frame(index))
@@ -40,12 +39,14 @@ fun <T : Component> MNode.component(
             }
         }
 
+        // Add as child after rendering to make sure the component's DOM node exists.
+        addChild(index, cmp)
         return cmp
     }
 }
 
 /**
- * WARNING: When passing in an upcasted [createComponent] the component will always be recreated.
+ * Note: When passing in an upcasted [createComponent] the component will always be recreated.
  *
  * e.g.:
  * ```

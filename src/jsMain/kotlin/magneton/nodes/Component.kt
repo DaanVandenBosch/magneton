@@ -26,10 +26,6 @@ actual abstract class Component : MNode() {
             parent.domAddChild(parent.children.indexOf(this), childDomNode)
         }
     }
-
-    override fun domRemoveChild(childDomNode: Node) {
-        children.firstOrNull()?.domRemoveChild(childDomNode)
-    }
 }
 
 fun renderToDom(domNode: Node, component: Component) {

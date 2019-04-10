@@ -8,10 +8,6 @@ expect abstract class Component() : MNode {
     internal var disposer: ReactionDisposer?
 
     abstract fun render(): MNode
-
-    override fun addChild(child: MNode)
-
-    override fun addChild(index: Int, child: MNode)
 }
 
 fun Component.div(block: MHTMLDivElement.() -> Unit): MHTMLDivElement =
@@ -26,29 +22,32 @@ fun <T : Component> MNode.component(
 ): T {
     val index = stack.peek().index++
     val node = children.getOrNull(index)
-    val cmp: T
 
-    if (node == null || node::class != componentClass) {
+    if (node != null && node::class == componentClass) {
+        @Suppress("UNCHECKED_CAST")
+        return node as T
+    } else {
+        // TODO: optimize with replace
         if (node != null) {
-            removeChildAt(index)
-        } else {
             (node as? Component)?.disposer?.dispose()
+            removeChildAt(index)
         }
 
-        cmp = createComponent()
+        val cmp = createComponent()
         addChild(index, cmp)
-    } else {
-        @Suppress("UNCHECKED_CAST")
-        cmp = node as T
-    }
 
-    cmp.disposer = reaction {
-        stack.push(Frame(index))
-        cmp.render()
-        stack.pop()
-    }
+        cmp.disposer = reaction {
+            stack.push(Frame(index))
 
-    return cmp
+            try {
+                cmp.render()
+            } finally {
+                stack.pop()
+            }
+        }
+
+        return cmp
+    }
 }
 
 /**
@@ -72,10 +71,15 @@ inline fun <reified T : Component> MElement.component(
 ): T =
         component(createComponent, T::class)
 
+// TODO: is only used during tests
 fun render(component: Component) {
     reaction {
         stack.push(Frame())
-        component.render()
-        stack.pop()
+
+        try {
+            component.render()
+        } finally {
+            stack.pop()
+        }
     }
 }

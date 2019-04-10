@@ -11,9 +11,9 @@ expect abstract class MNode() {
 
     internal open fun addChild(index: Int, child: MNode)
 
-    internal fun removeChildAt(index: Int)
+    internal open fun removeChildAt(index: Int)
 
-    internal fun removeChildrenFrom(index: Int)
+    internal open fun removeChildrenFrom(index: Int)
 }
 
 abstract class MElement : MNode()
@@ -31,6 +31,7 @@ internal inline fun <reified T : MNode> MNode.addElement(
     var node = children.getOrNull(index)
 
     if (node == null || node !is T) {
+        // TODO: optimize with replace
         if (node != null) {
             removeChildAt(index)
         }
@@ -40,8 +41,13 @@ internal inline fun <reified T : MNode> MNode.addElement(
     }
 
     stack.push(Frame())
-    node.block()
-    stack.pop()
+
+    try {
+        node.block()
+    } finally {
+        stack.pop()
+    }
+
     return node
 }
 
@@ -55,6 +61,7 @@ fun MElement.span(block: MHTMLSpanElement.() -> Unit): MHTMLSpanElement =
 fun div(block: MHTMLDivElement.() -> Unit): MHTMLDivElement =
         MHTMLDivElement().update(block)
 
+// TODO: remove
 fun <T : MElement> T.update(block: T.() -> Unit): T {
     val frame = Frame()
     stack.push(frame)

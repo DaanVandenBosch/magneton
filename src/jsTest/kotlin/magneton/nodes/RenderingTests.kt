@@ -1,6 +1,5 @@
 package magneton.nodes
 
-import org.w3c.dom.DocumentFragment
 import org.w3c.dom.get
 import kotlin.browser.document
 import kotlin.test.Test
@@ -23,13 +22,13 @@ class RenderingTests {
     @Test
     fun renderToDom() {
         val cmp = TestComponent()
-        val document = DocumentFragment()
+        val document = document.createDocumentFragment()
         renderToDom(document, cmp)
 
         assertEquals(2, document.querySelectorAll("div").length)
     }
 
-    class TestComponent : Component() {
+    private class TestComponent : Component() {
         override fun render() = div {
             div { }
         }

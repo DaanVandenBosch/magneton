@@ -5,14 +5,11 @@ import kotlin.reflect.KProperty
 class ComputedValue<T>(
         private val block: () -> T
 ) : Observable, Derivation {
+    private var initialized = false
     private var value: T? = null
 
     override val dependencies: MutableList<Observable> = mutableListOf()
     override val derivations: MutableList<Derivation> = mutableListOf()
-
-    init {
-        updateDerivation(this)
-    }
 
     override fun update() {
         val value = block()
@@ -25,7 +22,11 @@ class ComputedValue<T>(
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
         reportObserved()
-        // [value] is initialized by the time this method is called.
+
+        if (!initialized) {
+            updateDerivation(this)
+        }
+
         @Suppress("UNCHECKED_CAST")
         return value as T
     }

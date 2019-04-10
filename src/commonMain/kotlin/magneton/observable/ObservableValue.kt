@@ -16,13 +16,9 @@ class ObservableValue<T>(
         reportObserved()
 
         if (value != this.value) {
-            if (!inAction) {
-                runInAction {
-                    this.value = value
-                    reportChanged()
-                }
-            } else {
-                this.value = value
+            this.value = value
+
+            enforceInAction {
                 reportChanged()
             }
         }

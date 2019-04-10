@@ -6,18 +6,18 @@ actual abstract class MNode {
     actual val children: List<MNode> = _children
 
     internal actual open fun addChild(child: MNode) {
-        _children.add(child)
+        addChild(children.size, child)
     }
 
     internal actual open fun addChild(index: Int, child: MNode) {
         _children.add(index, child)
     }
 
-    internal actual fun removeChildAt(index: Int) {
+    internal actual open fun removeChildAt(index: Int) {
         _children.removeAt(index)
     }
 
-    internal actual fun removeChildrenFrom(index: Int) {
+    internal actual open fun removeChildrenFrom(index: Int) {
         for (i in index..children.lastIndex) {
             removeChildAt(i)
         }

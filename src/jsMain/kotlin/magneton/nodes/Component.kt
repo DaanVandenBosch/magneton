@@ -12,20 +12,23 @@ actual abstract class Component : MNode() {
 
     actual abstract fun render(): MNode
 
-    actual override fun addChild(child: MNode) {
-        checkChildrenEmpty()
-        super.addChild(child)
-    }
+    override fun addChild(index: Int, child: MNode) {
+        require(children.isEmpty() && index == 0) {
+            "A component can have at most one direct child."
+        }
 
-    actual override fun addChild(index: Int, child: MNode) {
-        checkChildrenEmpty()
         super.addChild(index, child)
     }
 
-    private fun checkChildrenEmpty() {
-        require(children.isEmpty()) {
-            "A component can have at most one direct child."
+    override fun domAddChild(index: Int, childDomNode: Node) {
+        parent?.let { parent ->
+            // TODO: optimize indexOf
+            parent.domAddChild(parent.children.indexOf(this), childDomNode)
         }
+    }
+
+    override fun domRemoveChild(childDomNode: Node) {
+        children.firstOrNull()?.domRemoveChild(childDomNode)
     }
 }
 

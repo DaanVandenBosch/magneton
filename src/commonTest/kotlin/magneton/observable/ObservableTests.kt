@@ -32,12 +32,10 @@ class ObservableTests {
 
         reaction { values.add(x) }
 
-        runInAction {
+        action {
             x = 1
             x = 2
-            runInAction {
-                x = 3
-            }
+            x = 3
         }
         assertEquals(2, values.size)
         assertEquals(0, values[0])
@@ -45,12 +43,35 @@ class ObservableTests {
     }
 
     @Test
+    fun reactionsShouldBeNestable() {
+        var x by ObservableValue(5)
+        var y by ObservableValue(-1)
+        var z = -1
+        var disposer: ReactionDisposer? = null
+
+        reaction {
+            y = 2 * x
+
+            disposer?.dispose()
+            disposer = reaction {
+                z = y + 2
+            }
+        }
+        assertEquals(10, y)
+        assertEquals(12, z)
+
+        x = 7
+        assertEquals(14, y)
+        assertEquals(16, z)
+    }
+
+    @Test
     fun actionsShouldBeNestable() {
         var x by ObservableValue(-1)
 
-        runInAction {
+        action {
             x = 5
-            runInAction {
+            action {
                 x = 10
             }
         }

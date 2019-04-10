@@ -1,6 +1,7 @@
 package magneton.nodes
 
 import magneton.observable.observable
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -61,6 +62,8 @@ class ComponentTests {
         assertTrue(cmp.children[0].children[0] is MHTMLSpanElement)
     }
 
+    // TODO
+    @Ignore
     @Test
     fun test4() {
         class Inner1Component : Component() {
@@ -71,15 +74,15 @@ class ComponentTests {
             override fun render() = div {}
         }
 
-        var use1 = true
+        var useInner1 by observable(true)
 
-        class OuterComponent : Component() {
+        val cmp = object : Component() {
             override fun render() = div {
-                component(if (use1) ::Inner1Component else ::Inner2Component)
+                println("outer_render $useInner1")
+                if (useInner1) component(::Inner1Component)
+                else component(::Inner2Component)
             }
         }
-
-        val cmp = OuterComponent()
         render(cmp)
 
         val node1 = cmp.children[0]
@@ -88,8 +91,8 @@ class ComponentTests {
         assertEquals(1, node1.children.size)
         assertTrue(node1.children[0] is Inner1Component)
 
-        use1 = false
-        render(cmp)
+        useInner1 = false
+
         val node2 = cmp.children[0]
 
         assertTrue(node2 is MHTMLDivElement)

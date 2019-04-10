@@ -4,6 +4,7 @@ internal class Frame(
         var index: Int = 0
 )
 
+// TODO: optimize stack (don't use an actual data structure)
 internal val stack = mutableListOf<Frame>()
 
 internal fun <T> MutableList<T>.push(element: T): Boolean = add(element)

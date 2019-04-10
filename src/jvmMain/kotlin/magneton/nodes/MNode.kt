@@ -19,7 +19,7 @@ actual abstract class MNode {
 
     internal actual open fun removeChildrenFrom(index: Int) {
         for (i in index..children.lastIndex) {
-            removeChildAt(i)
+            removeChildAt(index)
         }
     }
 }

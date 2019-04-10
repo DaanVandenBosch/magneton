@@ -40,10 +40,12 @@ internal inline fun <reified T : MNode> MNode.addElement(
         addChild(index, node)
     }
 
-    stack.push(Frame())
+    val frame = Frame()
+    stack.push(frame)
 
     try {
         node.block()
+        node.removeChildrenFrom(frame.index)
     } finally {
         stack.pop()
     }

@@ -31,8 +31,12 @@ actual abstract class Component : MNode() {
 fun renderToDom(domNode: Node, component: Component) {
     reaction {
         stack.push(Frame())
-        component.render()
-        stack.pop()
+
+        try {
+            component.render()
+        } finally {
+            stack.pop()
+        }
     }
     domNode.appendChild(component.domNode!!)
 }

@@ -30,6 +30,28 @@ class MNodeTests {
     }
 
     @Test
+    fun elementsShouldBeRemovedWhenNecessary() {
+        var addThird by observable(true)
+
+        class TestComponent : Component() {
+            override fun render() = div {
+                div {}
+                div {}
+                if (addThird) div { }
+            }
+        }
+
+        val cmp = TestComponent()
+        render(cmp)
+
+        assertEquals(3, cmp.children[0].children.size)
+
+        addThird = false
+
+        assertEquals(2, cmp.children[0].children.size)
+    }
+
+    @Test
     fun addingMultipleChildNodesToAComponentShouldThrow() {
         val cmp = object : Component() {
             override fun render(): MNode {

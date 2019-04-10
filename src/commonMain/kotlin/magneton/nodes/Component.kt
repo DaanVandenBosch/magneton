@@ -10,12 +10,6 @@ expect abstract class Component() : MNode {
     abstract fun render(): MNode
 }
 
-fun Component.div(block: MHTMLDivElement.() -> Unit): MHTMLDivElement =
-        addElement(::MHTMLDivElement, block)
-
-fun Component.span(block: MHTMLSpanElement.() -> Unit): MHTMLSpanElement =
-        addElement(::MHTMLSpanElement, block)
-
 fun <T : Component> MNode.component(
         createComponent: () -> T,
         componentClass: KClass<T>
@@ -66,20 +60,19 @@ fun <T : Component> MNode.component(
  * div { component(createComponent) }
  * ```
  */
-inline fun <reified T : Component> MElement.component(
+inline fun <reified T : Component> MNode.component(
         noinline createComponent: () -> T
 ): T =
         component(createComponent, T::class)
 
 // TODO: is only used during tests
-fun render(component: Component) {
-    reaction {
-        stack.push(Frame())
+fun render(component: Component): ReactionDisposer =
+        reaction {
+            stack.push(Frame())
 
-        try {
-            component.render()
-        } finally {
-            stack.pop()
+            try {
+                component.render()
+            } finally {
+                stack.pop()
+            }
         }
-    }
-}

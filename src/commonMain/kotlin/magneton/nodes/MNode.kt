@@ -51,24 +51,8 @@ internal inline fun <reified T : MNode> MNode.addElement(
     return node
 }
 
-fun MElement.div(block: MHTMLDivElement.() -> Unit): MHTMLDivElement =
+fun MNode.div(block: MHTMLDivElement.() -> Unit): MHTMLDivElement =
         addElement(::MHTMLDivElement, block)
 
-fun MElement.span(block: MHTMLSpanElement.() -> Unit): MHTMLSpanElement =
+fun MNode.span(block: MHTMLSpanElement.() -> Unit): MHTMLSpanElement =
         addElement(::MHTMLSpanElement, block)
-
-// TODO: remove
-fun div(block: MHTMLDivElement.() -> Unit): MHTMLDivElement =
-        MHTMLDivElement().update(block)
-
-// TODO: remove
-fun <T : MElement> T.update(block: T.() -> Unit): T {
-    val frame = Frame()
-    stack.push(frame)
-
-    block()
-    removeChildrenFrom(frame.index)
-
-    stack.pop()
-    return this
-}

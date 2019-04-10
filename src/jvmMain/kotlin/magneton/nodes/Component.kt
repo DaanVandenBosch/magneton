@@ -8,7 +8,7 @@ actual abstract class Component : MNode() {
     actual abstract fun render(): MNode
 
     override fun addChild(index: Int, child: MNode) {
-        require(children.isEmpty() && index == 0) {
+        check(children.isEmpty() && index == 0) {
             "A component can have at most one direct child."
         }
 

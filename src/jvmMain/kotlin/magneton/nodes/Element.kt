@@ -10,7 +10,7 @@ actual abstract class Element : Node() {
 
     actual open fun setAttribute(key: String, value: Any?) {
         _attributes[key] = value
-        stack.peek().setAttributes.add(key)
+        GlobalNodeState.get().updatedAttributes.add(key)
     }
 
     @Suppress("UNCHECKED_CAST")

@@ -14,7 +14,7 @@ fun <T : Component> Node.component(
         createComponent: () -> T,
         componentClass: KClass<T>
 ): T {
-    val index = stack.peek().childIndex++
+    val index = GlobalNodeState.get().childIndex++
     val node = children.getOrNull(index)
 
     if (node != null && node::class == componentClass) {
@@ -30,12 +30,12 @@ fun <T : Component> Node.component(
         val cmp = createComponent()
 
         cmp.disposer = reaction {
-            stack.push(Frame(index))
+            val prevState = GlobalNodeState.set(index)
 
             try {
                 cmp.render()
             } finally {
-                stack.pop()
+                GlobalNodeState.restore(prevState)
             }
         }
 
@@ -69,11 +69,11 @@ inline fun <reified T : Component> Node.component(
 // TODO: is only used during tests
 fun render(component: Component): ReactionDisposer =
         reaction {
-            stack.push(Frame())
+            GlobalNodeState.set()
 
             try {
                 component.render()
             } finally {
-                stack.pop()
+                GlobalNodeState.clear()
             }
         }

@@ -17,7 +17,7 @@ actual abstract class Element : Node() {
 
     actual open fun setAttribute(key: String, value: Any?) {
         if (value != attributes[key]) {
-            if (value == null) {
+            if (value == Unit) {
                 domNode?.setAttribute(key, "")
             } else {
                 domNode?.setAttribute(key, value.toString())
@@ -26,7 +26,7 @@ actual abstract class Element : Node() {
             _attributes[key] = value
         }
 
-        stack.peek().setAttributes.add(key)
+        GlobalNodeState.get().updatedAttributes.add(key)
     }
 
     @Suppress("UNCHECKED_CAST")

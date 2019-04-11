@@ -6,7 +6,7 @@ expect abstract class Element() : Node {
     val attributes: Map<String, Any?>
 
     open fun <T> getAttribute(key: String): T?
-    open fun setAttribute(key: String, value: Any? = null)
+    open fun setAttribute(key: String, value: Any? = Unit)
     open fun <T> removeAttribute(key: String): T?
 }
 
@@ -19,7 +19,8 @@ fun <T : Element> Node.addElement(
         elementClass: KClass<T>,
         block: T.() -> Unit
 ): T {
-    val index = stack.peek().childIndex++
+    val prevState = GlobalNodeState.set()!!
+    val index = prevState.childIndex++
     var node = children.getOrNull(index)
 
     if (node == null || node::class != elementClass) {
@@ -35,22 +36,21 @@ fun <T : Element> Node.addElement(
     @Suppress("UNCHECKED_CAST")
     node as T
 
-    val frame = Frame()
-    stack.push(frame)
-
     try {
         node.block()
 
         // Clean up implicitly removed attributes and child nodes.
+        val state = GlobalNodeState.get()
+
         for (key in node.attributes.keys) {
-            if (key !in frame.setAttributes) {
+            if (key !in state.updatedAttributes) {
                 node.removeAttribute<Any>(key)
             }
         }
 
-        node.removeChildrenFrom(frame.childIndex)
+        node.removeChildrenFrom(state.childIndex)
     } finally {
-        stack.pop()
+        GlobalNodeState.restore(prevState)
     }
 
     return node

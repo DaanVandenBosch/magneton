@@ -30,12 +30,12 @@ actual abstract class Component : Node() {
 
 fun renderToDom(domNode: DomNode, component: Component) {
     reaction {
-        stack.push(Frame())
+        GlobalNodeState.set()
 
         try {
             component.render()
         } finally {
-            stack.pop()
+            GlobalNodeState.clear()
         }
     }
     domNode.appendChild(component.domNode!!)

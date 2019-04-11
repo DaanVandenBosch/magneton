@@ -1,35 +1,40 @@
 package magneton.observable
 
-private object GlobalActionState {
-    var inAction = false
-    var changedObservables: MutableSet<Observable>? = null
+import magneton.GlobalState
+
+private class ActionState {
+    val changedObservables: MutableSet<Observable> = mutableSetOf()
+
+    companion object {
+        val Global = GlobalState<ActionState>()
+    }
 }
 
-private object GlobalDerivationState {
-    var observedObservables: MutableSet<Observable>? = null
+private class DerivationState {
+    val observedObservables: MutableSet<Observable> = mutableSetOf()
+
+    companion object {
+        val Global = GlobalState<DerivationState>()
+    }
 }
 
 internal fun Observable.reportObserved() {
-    GlobalDerivationState.observedObservables?.add(this)
+    DerivationState.Global.get()?.observedObservables?.add(this)
 }
 
 internal fun Observable.reportChanged() {
-    GlobalActionState.changedObservables?.add(this)
+    ActionState.Global.get()?.changedObservables?.add(this)
 }
 
 internal fun updateDerivation(derivation: Derivation) {
-    // Save global state.
-    val prevObservedObservables = GlobalDerivationState.observedObservables
-
-    // Set new global state.
-    val currentObservedObservables = mutableSetOf<Observable>()
-    GlobalDerivationState.observedObservables = currentObservedObservables
+    val newState = DerivationState()
+    val prevState = DerivationState.Global.set(newState)
 
     try {
         derivation.update()
     } finally {
         // Restore previous global state.
-        GlobalDerivationState.observedObservables = prevObservedObservables
+        DerivationState.Global.restore(prevState)
 
         // Update dependencies list.
         val iter = derivation.dependencies.iterator()
@@ -37,13 +42,13 @@ internal fun updateDerivation(derivation: Derivation) {
         while (iter.hasNext()) {
             val dependency = iter.next()
 
-            if (dependency !in currentObservedObservables) {
+            if (dependency !in newState.observedObservables) {
                 iter.remove()
                 dependency.derivations.remove(derivation)
             }
         }
 
-        currentObservedObservables.forEach { dependency ->
+        newState.observedObservables.forEach { dependency ->
             if (dependency !in derivation.dependencies) {
                 derivation.dependencies.add(dependency)
                 dependency.derivations.add(derivation)
@@ -53,7 +58,7 @@ internal fun updateDerivation(derivation: Derivation) {
 }
 
 internal fun <T> enforceInAction(block: () -> T): T {
-    return if (GlobalActionState.inAction) {
+    return if (ActionState.Global.get() != null) {
         block()
     } else {
         runInAction(block)
@@ -61,24 +66,16 @@ internal fun <T> enforceInAction(block: () -> T): T {
 }
 
 internal fun <T> runInAction(block: () -> T): T {
-    // Save global state.
-    val prevInAction = GlobalActionState.inAction
-    val prevChangedObservables = GlobalActionState.changedObservables
-
-    // Set new global state.
-    GlobalActionState.inAction = true
-    val currentChangedObservables = mutableSetOf<Observable>()
-    GlobalActionState.changedObservables = currentChangedObservables
+    val newState = ActionState()
+    val prevState = ActionState.Global.set(newState)
 
     try {
         return block()
     } finally {
-        // Restore previous global state.
-        GlobalActionState.inAction = prevInAction
-        GlobalActionState.changedObservables = prevChangedObservables
+        ActionState.Global.restore(prevState)
 
         // Update observers of changed observables.
-        currentChangedObservables.forEach { observable ->
+        newState.changedObservables.forEach { observable ->
             observable.derivations.forEach(::updateDerivation)
         }
     }

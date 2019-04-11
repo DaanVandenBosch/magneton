@@ -120,7 +120,3 @@ kotlinFrontend {
 
     define("PRODUCTION", false)
 }
-
-jvmTest {
-    maxParallelForks = 1
-}

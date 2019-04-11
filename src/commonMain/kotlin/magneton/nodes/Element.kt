@@ -19,7 +19,7 @@ fun <T : Element> Node.addElement(
         elementClass: KClass<T>,
         block: T.() -> Unit
 ): T {
-    val prevState = GlobalNodeState.set()!!
+    val prevState = NodeState.Global.set(NodeState())!!
     val index = prevState.childIndex++
     var node = children.getOrNull(index)
 
@@ -40,7 +40,7 @@ fun <T : Element> Node.addElement(
         node.block()
 
         // Clean up implicitly removed attributes and child nodes.
-        val state = GlobalNodeState.get()
+        val state = NodeState.Global.get()!!
 
         for (key in node.attributes.keys) {
             if (key !in state.updatedAttributes) {
@@ -50,7 +50,7 @@ fun <T : Element> Node.addElement(
 
         node.removeChildrenFrom(state.childIndex)
     } finally {
-        GlobalNodeState.restore(prevState)
+        NodeState.Global.restore(prevState)
     }
 
     return node

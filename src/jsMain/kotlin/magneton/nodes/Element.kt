@@ -26,7 +26,7 @@ actual abstract class Element : Node() {
             _attributes[key] = value
         }
 
-        GlobalNodeState.get().updatedAttributes.add(key)
+        NodeState.Global.get()!!.updatedAttributes.add(key)
     }
 
     @Suppress("UNCHECKED_CAST")

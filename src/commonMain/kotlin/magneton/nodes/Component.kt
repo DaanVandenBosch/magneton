@@ -1,5 +1,6 @@
 package magneton.nodes
 
+import magneton.GlobalState
 import magneton.observable.ReactionDisposer
 import magneton.observable.reaction
 import kotlin.reflect.KClass
@@ -14,7 +15,7 @@ fun <T : Component> Node.component(
         createComponent: () -> T,
         componentClass: KClass<T>
 ): T {
-    val index = GlobalNodeState.get().childIndex++
+    val index = NodeState.Global.get()!!.childIndex++
     val node = children.getOrNull(index)
 
     if (node != null && node::class == componentClass) {
@@ -30,12 +31,12 @@ fun <T : Component> Node.component(
         val cmp = createComponent()
 
         cmp.disposer = reaction {
-            val prevState = GlobalNodeState.set(index)
+            val prevState = NodeState.Global.set(NodeState(index))
 
             try {
                 cmp.render()
             } finally {
-                GlobalNodeState.restore(prevState)
+                NodeState.Global.restore(prevState)
             }
         }
 
@@ -69,11 +70,11 @@ inline fun <reified T : Component> Node.component(
 // TODO: is only used during tests
 fun render(component: Component): ReactionDisposer =
         reaction {
-            GlobalNodeState.set()
+            NodeState.Global.set(NodeState())
 
             try {
                 component.render()
             } finally {
-                GlobalNodeState.clear()
+                NodeState.Global.clear()
             }
         }

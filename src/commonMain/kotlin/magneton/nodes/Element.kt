@@ -1,0 +1,82 @@
+package magneton.nodes
+
+import kotlin.reflect.KClass
+
+expect abstract class Element() : Node {
+    val attributes: Map<String, Any?>
+
+    open fun <T> getAttribute(key: String): T?
+    open fun setAttribute(key: String, value: Any? = null)
+    open fun <T> removeAttribute(key: String): T?
+}
+
+abstract class HTMLElement : Element()
+expect class HTMLDivElement() : HTMLElement
+expect class HTMLSpanElement() : HTMLElement
+
+fun <T : Element> Node.addElement(
+        create: () -> T,
+        elementClass: KClass<T>,
+        block: T.() -> Unit
+): T {
+    val index = stack.peek().childIndex++
+    var node = children.getOrNull(index)
+
+    if (node == null || node::class != elementClass) {
+        // TODO: is replaceChild faster than removeChild + appendChild in DOM?
+        if (node != null) {
+            removeChildAt(index)
+        }
+
+        node = create()
+        addChild(index, node)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    node as T
+
+    val frame = Frame()
+    stack.push(frame)
+
+    try {
+        node.block()
+
+        // Clean up implicitly removed attributes and child nodes.
+        for (key in node.attributes.keys) {
+            if (key !in frame.setAttributes) {
+                node.removeAttribute<Any>(key)
+            }
+        }
+
+        node.removeChildrenFrom(frame.childIndex)
+    } finally {
+        stack.pop()
+    }
+
+    return node
+}
+
+inline fun <reified T : Element> Node.addElement(
+        noinline create: () -> T,
+        noinline block: T.() -> Unit
+): T =
+        addElement(create, T::class, block)
+
+fun Node.div(block: HTMLDivElement.() -> Unit): HTMLDivElement =
+        addElement(::HTMLDivElement, block)
+
+fun Node.span(block: HTMLSpanElement.() -> Unit): HTMLSpanElement =
+        addElement(::HTMLSpanElement, block)
+
+var HTMLElement.hidden: Boolean
+    get() = getAttribute("hidden") ?: false
+    set(value) {
+        if (value) setAttribute("hidden")
+        else removeAttribute<Any>("hidden")
+    }
+
+var HTMLElement.style: String?
+    get() = getAttribute("style")
+    set(value) {
+        setAttribute("style", value)
+    }

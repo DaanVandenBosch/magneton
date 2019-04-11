@@ -5,7 +5,7 @@ import kotlin.test.assertEquals
 
 class ObservableTests {
     @Test
-    fun anObservableValueShouldFunctionAsARegularVariable() {
+    fun an_observable_value_should_function_as_a_regular_variable() {
         var x: Int by ObservableValue(7)
         assertEquals(7, x)
 
@@ -14,7 +14,7 @@ class ObservableTests {
     }
 
     @Test
-    fun aReactionShouldReactToChangingObservableValues() {
+    fun a_reaction_should_react_to_changing_observable_values() {
         var x: Int by ObservableValue(7)
         var extractedX = -1
 
@@ -26,7 +26,7 @@ class ObservableTests {
     }
 
     @Test
-    fun aReactionShouldBeTriggeredOnlyOncePerActionRun() {
+    fun a_reaction_should_be_triggered_only_once_per_action_run() {
         var x: Int by ObservableValue(0)
         val values = mutableListOf<Int>()
 
@@ -43,7 +43,7 @@ class ObservableTests {
     }
 
     @Test
-    fun reactionsShouldBeNestable() {
+    fun reactions_should_be_nestable() {
         var x by ObservableValue(5)
         var y by ObservableValue(-1)
         var z = -1
@@ -66,7 +66,7 @@ class ObservableTests {
     }
 
     @Test
-    fun actionsShouldBeNestable() {
+    fun actions_should_be_nestable() {
         var x by ObservableValue(-1)
 
         action {
@@ -79,7 +79,7 @@ class ObservableTests {
     }
 
     @Test
-    fun aComputedValueShouldUpdateWhenItsDependenciesChange() {
+    fun a_computed_value_should_update_when_its_dependencies_change() {
         var dep1: Int by ObservableValue(2)
         var dep2: Int by ObservableValue(3)
         val product by ComputedValue { dep1 * dep2 }

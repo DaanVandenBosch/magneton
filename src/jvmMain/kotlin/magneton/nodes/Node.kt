@@ -1,15 +1,15 @@
 package magneton.nodes
 
-actual abstract class MNode {
-    private val _children: MutableList<MNode> = mutableListOf()
+// TODO: share code with JS implementation
+actual abstract class Node {
+    private val _children: MutableList<Node> = mutableListOf()
+    actual val children: List<Node> = _children
 
-    actual val children: List<MNode> = _children
-
-    internal actual open fun addChild(child: MNode) {
+    internal actual open fun addChild(child: Node) {
         addChild(children.size, child)
     }
 
-    internal actual open fun addChild(index: Int, child: MNode) {
+    internal actual open fun addChild(index: Int, child: Node) {
         _children.add(index, child)
     }
 
@@ -23,6 +23,3 @@ actual abstract class MNode {
         }
     }
 }
-
-actual class MHTMLDivElement : MHTMLElement()
-actual class MHTMLSpanElement : MHTMLElement()

@@ -2,17 +2,17 @@ package magneton.nodes
 
 import magneton.observable.ReactionDisposer
 import magneton.observable.reaction
-import org.w3c.dom.Node
+import org.w3c.dom.Node as DomNode
 
 // TODO: share code with JVM implementation.
-actual abstract class Component : MNode() {
-    override val domNode: Node? get() = children.firstOrNull()?.domNode
+actual abstract class Component : Node() {
+    override val domNode: DomNode? get() = children.firstOrNull()?.domNode
 
     internal actual var disposer: ReactionDisposer? = null
 
-    actual abstract fun render(): MNode
+    actual abstract fun render(): Node
 
-    override fun addChild(index: Int, child: MNode) {
+    override fun addChild(index: Int, child: Node) {
         check(children.isEmpty() && index == 0) {
             "A component can have at most one direct child."
         }
@@ -20,7 +20,7 @@ actual abstract class Component : MNode() {
         super.addChild(index, child)
     }
 
-    override fun domAddChild(index: Int, childDomNode: Node) {
+    override fun domAddChild(index: Int, childDomNode: DomNode) {
         parent?.let { parent ->
             // TODO: optimize indexOf
             parent.domAddChild(parent.children.indexOf(this), childDomNode)
@@ -28,7 +28,7 @@ actual abstract class Component : MNode() {
     }
 }
 
-fun renderToDom(domNode: Node, component: Component) {
+fun renderToDom(domNode: DomNode, component: Component) {
     reaction {
         stack.push(Frame())
 

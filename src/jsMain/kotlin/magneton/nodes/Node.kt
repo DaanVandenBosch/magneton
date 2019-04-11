@@ -1,25 +1,28 @@
 package magneton.nodes
 
+import org.w3c.dom.Element
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLSpanElement
-import org.w3c.dom.Node
 import org.w3c.dom.get
 import kotlin.browser.document
+import kotlin.collections.set
+import org.w3c.dom.Node as DomNode
 
 // TODO: share code with JVM implementation
-actual abstract class MNode {
-    private var _parent: MNode? = null
-    private val _children: MutableList<MNode> = mutableListOf()
+actual abstract class Node {
+    abstract val domNode: DomNode?
 
-    abstract val domNode: Node?
-    val parent: MNode? get() = _parent
-    actual val children: List<MNode> = _children
+    private var _parent: Node? = null
+    val parent: Node? get() = _parent
 
-    internal actual open fun addChild(child: MNode) {
+    private val _children: MutableList<Node> = mutableListOf()
+    actual val children: List<Node> = _children
+
+    internal actual open fun addChild(child: Node) {
         addChild(children.size, child)
     }
 
-    internal actual open fun addChild(index: Int, child: MNode) {
+    internal actual open fun addChild(index: Int, child: Node) {
         if (child.parent != null) {
             child.parent!!._children.remove(child)
             child._parent = this
@@ -43,21 +46,13 @@ actual abstract class MNode {
         }
     }
 
-    internal open fun domAddChild(index: Int, childDomNode: Node) {
+    internal open fun domAddChild(index: Int, childDomNode: DomNode) {
         domNode?.let { domNode ->
             domNode.insertBefore(childDomNode, domNode.childNodes[index])
         }
     }
 
-    internal open fun domRemoveChild(childDomNode: Node) {
+    internal open fun domRemoveChild(childDomNode: DomNode) {
         domNode?.removeChild(childDomNode)
     }
-}
-
-actual class MHTMLDivElement : MHTMLElement() {
-    override val domNode = document.createElement("div") as HTMLDivElement
-}
-
-actual class MHTMLSpanElement : MHTMLElement() {
-    override val domNode = document.createElement("span") as HTMLSpanElement
 }

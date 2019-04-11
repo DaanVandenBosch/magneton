@@ -4,17 +4,17 @@ import magneton.observable.ReactionDisposer
 import magneton.observable.reaction
 import kotlin.reflect.KClass
 
-expect abstract class Component() : MNode {
+expect abstract class Component() : Node {
     internal var disposer: ReactionDisposer?
 
-    abstract fun render(): MNode
+    abstract fun render(): Node
 }
 
-fun <T : Component> MNode.component(
+fun <T : Component> Node.component(
         createComponent: () -> T,
         componentClass: KClass<T>
 ): T {
-    val index = stack.peek().index++
+    val index = stack.peek().childIndex++
     val node = children.getOrNull(index)
 
     if (node != null && node::class == componentClass) {
@@ -61,7 +61,7 @@ fun <T : Component> MNode.component(
  * div { component(createComponent) }
  * ```
  */
-inline fun <reified T : Component> MNode.component(
+inline fun <reified T : Component> Node.component(
         noinline createComponent: () -> T
 ): T =
         component(createComponent, T::class)

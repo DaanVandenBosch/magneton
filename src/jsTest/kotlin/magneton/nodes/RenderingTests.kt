@@ -20,7 +20,7 @@ class RenderingTests {
     }
 
     @Test
-    fun renderToDom() {
+    fun render_to_dom() {
         val cmp = TestComponent()
         val document = document.createDocumentFragment()
         renderToDom(document, cmp)

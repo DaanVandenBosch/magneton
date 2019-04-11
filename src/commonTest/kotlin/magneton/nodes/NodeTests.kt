@@ -3,9 +3,9 @@ package magneton.nodes
 import magneton.observable.observable
 import kotlin.test.*
 
-class MNodeTests {
+class NodeTests {
     @Test
-    fun elementsShouldBeAddedCorrectly() {
+    fun elements_should_be_added_correctly() {
         class TestComponent : Component() {
             override fun render() = div {
                 div {}
@@ -20,17 +20,17 @@ class MNodeTests {
 
         assertEquals(1, cmp.children.size)
         val div1 = cmp.children[0]
-        assertTrue(div1 is MHTMLDivElement)
+        assertTrue(div1 is HTMLDivElement)
         assertEquals(2, div1.children.size)
-        assertTrue(div1.children[0] is MHTMLDivElement)
+        assertTrue(div1.children[0] is HTMLDivElement)
         val span = div1.children[1]
-        assertTrue(span is MHTMLSpanElement)
+        assertTrue(span is HTMLSpanElement)
         assertEquals(1, span.children.size)
-        assertTrue(span.children[0] is MHTMLDivElement)
+        assertTrue(span.children[0] is HTMLDivElement)
     }
 
     @Test
-    fun elementsShouldBeRemovedWhenNecessary() {
+    fun elements_should_be_removed_when_necessary() {
         var addThird by observable(true)
 
         class TestComponent : Component() {
@@ -52,9 +52,9 @@ class MNodeTests {
     }
 
     @Test
-    fun addingMultipleChildNodesToAComponentShouldThrow() {
+    fun adding_multiple_child_nodes_toA_component_should_throw() {
         val cmp = object : Component() {
-            override fun render(): MNode {
+            override fun render(): Node {
                 div { }
                 return div { }
             }
@@ -66,7 +66,7 @@ class MNodeTests {
     }
 
     @Test
-    fun elementsShouldOnlyBeReplacedWhenNecessary() {
+    fun elements_should_only_be_replaced_when_necessary() {
         var spanInMiddle by observable(true)
 
         val cmp = object : Component() {
@@ -98,7 +98,7 @@ class MNodeTests {
     }
 
     @Test
-    fun componentsShouldBeNestable() {
+    fun components_should_be_nestable() {
         class InnerCmp : Component() {
             override fun render() = span {}
         }
@@ -115,13 +115,13 @@ class MNodeTests {
         render(cmp)
 
         assertTrue(cmp.children[0] is CenterCmp)
-        assertTrue(cmp.children[0].children[0] is MHTMLDivElement)
+        assertTrue(cmp.children[0].children[0] is HTMLDivElement)
         assertTrue(cmp.children[0].children[0].children[0] is InnerCmp)
-        assertTrue(cmp.children[0].children[0].children[0].children[0] is MHTMLSpanElement)
+        assertTrue(cmp.children[0].children[0].children[0].children[0] is HTMLSpanElement)
     }
 
     @Test
-    fun componentsShouldOnlyBeReplacedWhenNecessary() {
+    fun components_should_only_be_replaced_when_necessary() {
         class Inner1Component : Component() {
             override fun render() = span {}
         }

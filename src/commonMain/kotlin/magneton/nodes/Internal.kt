@@ -1,7 +1,8 @@
 package magneton.nodes
 
 internal class Frame(
-        var index: Int = 0
+        var childIndex: Int = 0,
+        val setAttributes: MutableSet<String> = mutableSetOf()
 )
 
 // TODO: optimize stack (don't use an actual data structure)

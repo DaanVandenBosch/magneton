@@ -1,17 +1,17 @@
-package magneton.css
+package magneton.style
 
 import kotlin.reflect.KProperty
 
-class CssProperty<T>(
+class CSSProperty<T>(
         val name: String,
         val vendorPrefixes: List<String>,
         var value: T?
 ) {
     @Suppress("UNCHECKED_CAST")
-    operator fun getValue(thisRef: CssDeclaration, property: KProperty<*>): T? =
+    operator fun getValue(thisRef: CSSStyleDeclaration, property: KProperty<*>): T? =
             thisRef.properties[name]?.value as T?
 
-    operator fun setValue(thisRef: CssDeclaration, property: KProperty<*>, value: T?) {
+    operator fun setValue(thisRef: CSSStyleDeclaration, property: KProperty<*>, value: T?) {
         if (this.value != value) {
             this.value = value
 
@@ -40,7 +40,7 @@ class CssProperty<T>(
 
     private fun valueToCss(sb: StringBuilder, value: Any?) {
         when (value) {
-            is CssPropertyType -> sb.append(value.css)
+            is StylePropertyType -> sb.append(value.css)
             is Number -> sb.append(value)
             is List<*> -> {
                 var first = true

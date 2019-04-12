@@ -1,11 +1,6 @@
 package magneton.nodes
 
-import org.w3c.dom.Element
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLSpanElement
 import org.w3c.dom.get
-import kotlin.browser.document
-import kotlin.collections.set
 import org.w3c.dom.Node as DomNode
 
 // TODO: share code with JVM implementation

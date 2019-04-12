@@ -1,9 +1,9 @@
-package magneton.css
+package magneton.style
 
-sealed class CssSelector {
+sealed class CSSSelector {
     abstract val css: String
 
-    abstract class Simple(name: String) : CssSelector() {
+    abstract class Simple(name: String) : CSSSelector() {
         val uniqueName = "$name-${(i++).toString(16)}"
     }
 
@@ -19,30 +19,30 @@ sealed class CssSelector {
         override val css = ":$name"
     }
 
-    class Union(val selector1: CssSelector, val selector2: CssSelector) : CssSelector() {
+    class Union(val selector1: CSSSelector, val selector2: CSSSelector) : CSSSelector() {
         override val css = selector1.css + selector2.css
     }
 
-    class Child(val parent: CssSelector, val child: CssSelector) : CssSelector() {
+    class Child(val parent: CSSSelector, val child: CSSSelector) : CSSSelector() {
         override val css = "${parent.css} > ${child.css}"
     }
 
-    class Descendant(val parent: CssSelector, val descendant: CssSelector) : CssSelector() {
+    class Descendant(val parent: CSSSelector, val descendant: CSSSelector) : CSSSelector() {
         override val css = "${parent.css} ${descendant.css}"
     }
 
-    class Sibling(val preceding: CssSelector, val sibling: CssSelector) : CssSelector() {
+    class Sibling(val preceding: CSSSelector, val sibling: CSSSelector) : CSSSelector() {
         override val css = "${preceding.css} ~ ${sibling.css}"
     }
 
-    class AdjacentSibling(val preceding: CssSelector, val sibling: CssSelector) : CssSelector() {
+    class AdjacentSibling(val preceding: CSSSelector, val sibling: CSSSelector) : CSSSelector() {
         override val css = "${preceding.css} + ${sibling.css}"
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
-        other as CssSelector
+        other as CSSSelector
         if (css != other.css) return false
         return true
     }

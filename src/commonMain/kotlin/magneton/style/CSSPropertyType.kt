@@ -1,18 +1,18 @@
-package magneton.css
+package magneton.style
 
-interface CssPropertyType {
+interface StylePropertyType {
     val css: String
 }
 
-enum class Position(override val css: String) : CssPropertyType {
+enum class Position(override val css: String) : StylePropertyType {
     Absolute("absolute"), Relative("relative"), Fixed("fixed")
 }
 
-enum class Display(override val css: String) : CssPropertyType {
+enum class Display(override val css: String) : StylePropertyType {
     None("none"), Block("block"), RunIn("run-in"), Flex("flex"), Inline("inline"), InlineBlock("inline-block"), InlineFlex("inline-flex")
 }
 
-sealed class FontFamily : CssPropertyType {
+sealed class FontFamily : StylePropertyType {
     object Serif : FontFamily() {
         override val css = "serif"
     }
@@ -30,14 +30,14 @@ sealed class FontFamily : CssPropertyType {
     }
 }
 
-enum class CssUnit(override val css: String) : CssPropertyType {
+enum class StyleUnit(override val css: String) : StylePropertyType {
     Px("px"), Em("em"), Pt("pt"), Ex("ex"), Percent("%")
 }
 
-private val defaultUnit = CssUnit.Px
+private val defaultUnit = StyleUnit.Px
 
-class Length private constructor(override val css: String) : CssPropertyType {
-    constructor(number: Number, unit: CssUnit) : this("$number${unit.css}")
+class Length private constructor(override val css: String) : StylePropertyType {
+    constructor(number: Number, unit: StyleUnit) : this("$number${unit.css}")
     constructor(number: Number) : this(number, defaultUnit)
 
     companion object {
@@ -45,17 +45,17 @@ class Length private constructor(override val css: String) : CssPropertyType {
     }
 }
 
-val Number.px get() = Length(this, CssUnit.Px)
-val Number.em get() = Length(this, CssUnit.Em)
-val Number.pt get() = Length(this, CssUnit.Pt)
-val Number.ex get() = Length(this, CssUnit.Ex)
-val Number.percent get() = Length(this, CssUnit.Percent)
+val Number.px get() = Length(this, StyleUnit.Px)
+val Number.em get() = Length(this, StyleUnit.Em)
+val Number.pt get() = Length(this, StyleUnit.Pt)
+val Number.ex get() = Length(this, StyleUnit.Ex)
+val Number.percent get() = Length(this, StyleUnit.Percent)
 
-enum class Origin(override val css: String) : CssPropertyType {
+enum class Origin(override val css: String) : StylePropertyType {
     Top("top"), Bottom("bottom"), Left("left"), Right("right"), Center("center")
 }
 
-class Coordinate(origin: Origin, length: Length) : CssPropertyType {
+class Coordinate(origin: Origin, length: Length) : StylePropertyType {
     override val css = "${origin.css} ${length.css}"
 
     companion object {
@@ -64,14 +64,14 @@ class Coordinate(origin: Origin, length: Length) : CssPropertyType {
     }
 }
 
-class BackgroundPosition(horizontal: Coordinate, vertical: Coordinate) : CssPropertyType {
+class BackgroundPosition(horizontal: Coordinate, vertical: Coordinate) : StylePropertyType {
     constructor(horizontal: Number, vertical: Number) :
             this(Coordinate.left(horizontal), Coordinate.top(vertical))
 
     override val css = "${horizontal.css} ${vertical.css}"
 }
 
-class Color private constructor(r: Int, g: Int, b: Int, a: Double) : CssPropertyType {
+class Color private constructor(r: Int, g: Int, b: Int, a: Double) : StylePropertyType {
     init {
         require(r in 0..255) { "r should be between 0 and 255" }
         require(g in 0..255) { "g should be between 0 and 255" }
@@ -87,48 +87,48 @@ class Color private constructor(r: Int, g: Int, b: Int, a: Double) : CssProperty
     }
 }
 
-enum class TextAlign(override val css: String) : CssPropertyType {
+enum class TextAlign(override val css: String) : StylePropertyType {
     Left("left"), Right("right"), Center("center"), Justify("justify"), JustifyAll("justify-all"), Start("start"), End("end"), MatchParent("match-parent")
 }
 
-class Url(url: String) : CssPropertyType {
+class Url(url: String) : StylePropertyType {
     override val css = "url($url)"
 }
 
-enum class FlexDirection(override val css: String) : CssPropertyType {
+enum class FlexDirection(override val css: String) : StylePropertyType {
     Row("row"), RowReverse("row-reverse"), Column("column"), ColumnReverse("column-reverse")
 }
 
-enum class FlexWrap(override val css: String) : CssPropertyType {
+enum class FlexWrap(override val css: String) : StylePropertyType {
     Nowrap("nowrap"), Wrap("wrap"), WrapReverse("wrap-reverse")
 }
 
-enum class JustifyContent(override val css: String) : CssPropertyType {
+enum class JustifyContent(override val css: String) : StylePropertyType {
     Center("center"), Start("start"), End("end")
 }
 
-enum class AlignItems(override val css: String) : CssPropertyType {
+enum class AlignItems(override val css: String) : StylePropertyType {
     Center("center"), Stretch("stretch")
 }
 
-enum class UserSelect(override val css: String) : CssPropertyType {
+enum class UserSelect(override val css: String) : StylePropertyType {
     None("none"), Auto("auto"), Text("text"), Contain("contain"), All("all")
 }
 
-enum class Cursor(override val css: String) : CssPropertyType {
+enum class Cursor(override val css: String) : StylePropertyType {
     Pointer("pointer"), Auto("auto"), Default("default"), None("none"), Help("help"), Progress("progress"), Wait("wait"), ContextMenu("context-menu"), Cell("cell"), Crosshair("crosshair"), Text("text"), VerticalText("vertical-text"), Alias("alias"), Copy("copy"), Move("move"), NoDrop("no-drop"), NotAllowed("not-allowed"), Grab("grab"), Grabbing("grabbing")
 }
 
-class Transform private constructor(override val css: String) : CssPropertyType {
+class Transform private constructor(override val css: String) : StylePropertyType {
     companion object {
         fun translate(x: Length, y: Length) = Transform("translate(${x.css}, ${y.css})")
     }
 }
 
-enum class WhiteSpace(override val css: String) : CssPropertyType {
+enum class WhiteSpace(override val css: String) : StylePropertyType {
     Normal("normal"), Pre("pre"), Nowrap("nowrap"), PreWrap("pre-wrap"), PreLine("pre-line")
 }
 
-enum class Overflow(override val css: String) : CssPropertyType {
+enum class Overflow(override val css: String) : StylePropertyType {
     Visible("visible"), Hidden("hidden"), Clip("clip"), Scroll("scroll"), Auto("auto")
 }

@@ -16,13 +16,16 @@ actual abstract class Element : Node() {
             attributes[key] as T?
 
     actual open fun setAttribute(key: String, value: Any?) {
-        if (value != attributes[key]) {
-            if (value == Unit) {
-                domNode?.setAttribute(key, "")
-            } else {
-                domNode?.setAttribute(key, value.toString())
-            }
+        setAttribute(key, value?.toString() ?: "")
+    }
 
+    actual open fun setAttribute(key: String, value: ElementAttributeValue?) {
+        setAttribute(key, value?.toStringValue() ?: "")
+    }
+
+    private fun setAttribute(key: String, value: String) {
+        if (value != attributes[key]) {
+            domNode?.setAttribute(key, value)
             _attributes[key] = value
         }
 

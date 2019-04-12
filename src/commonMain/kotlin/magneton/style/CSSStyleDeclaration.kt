@@ -1,13 +1,11 @@
-package magneton.css
+package magneton.style
 
-import magneton.observableold.mutableVar
-import magneton.observableold.vars.Var
-
-abstract class CssDeclaration {
-    private val mutableCssVar = mutableVar("")
-
+abstract class CSSStyleDeclaration {
     internal var doUpdateCss = true
-    internal val properties = mutableMapOf<String, CssProperty<*>>()
+    internal val properties = mutableMapOf<String, CSSProperty<*>>()
+
+    private var _css: String = ""
+    val css: String get() = _css
 
     var position: Position? by prop("position")
     var display: Display? by prop("display")
@@ -76,14 +74,11 @@ abstract class CssDeclaration {
         marginRight = horizontal
     }
 
-    val cssVar: Var<String> = mutableCssVar
-    val css: String by cssVar
+    private fun <T> prop(name: String): CSSProperty<T> =
+            CSSProperty(name, emptyList(), null)
 
-    private fun <T> prop(name: String): CssProperty<T> =
-            CssProperty(name, emptyList(), null)
-
-    private fun <T> prop(name: String, vararg vendorPrefixes: String): CssProperty<T> =
-            CssProperty(name, vendorPrefixes.toList(), null)
+    private fun <T> prop(name: String, vararg vendorPrefixes: String): CSSProperty<T> =
+            CSSProperty(name, vendorPrefixes.toList(), null)
 
     internal fun updateCss() {
         if (!doUpdateCss) return
@@ -96,6 +91,6 @@ abstract class CssDeclaration {
             sb.append('\n')
         }
 
-        mutableCssVar.value = sb.toString()
+        _css = sb.toString()
     }
 }

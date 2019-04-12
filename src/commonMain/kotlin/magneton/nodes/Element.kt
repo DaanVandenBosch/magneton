@@ -1,12 +1,18 @@
 package magneton.nodes
 
+import magneton.style.InlineCSSStyleDeclaration
 import kotlin.reflect.KClass
+
+interface ElementAttributeValue {
+    fun toStringValue(): String
+}
 
 expect abstract class Element() : Node {
     val attributes: Map<String, Any?>
 
     open fun <T> getAttribute(key: String): T?
-    open fun setAttribute(key: String, value: Any? = Unit)
+    open fun setAttribute(key: String, value: Any? = null)
+    open fun setAttribute(key: String, value: ElementAttributeValue?)
     open fun <T> removeAttribute(key: String): T?
 }
 
@@ -75,8 +81,8 @@ var HTMLElement.hidden: Boolean
         else removeAttribute<Any>("hidden")
     }
 
-var HTMLElement.style: String?
-    get() = getAttribute("style")
-    set(value) {
-        setAttribute("style", value)
-    }
+fun HTMLElement.style(block: InlineCSSStyleDeclaration.() -> Unit) {
+    val decl = InlineCSSStyleDeclaration()
+    decl.invoke(block)
+    setAttribute("style", decl)
+}

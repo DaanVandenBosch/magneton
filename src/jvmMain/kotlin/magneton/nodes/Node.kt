@@ -1,7 +1,9 @@
 package magneton.nodes
 
+actual abstract class Node
+
 // TODO: share code with JS implementation
-actual abstract class Node {
+actual abstract class Parent : Node() {
     private val _children: MutableList<Node> = mutableListOf()
     actual val children: List<Node> = _children
 
@@ -23,3 +25,5 @@ actual abstract class Node {
         }
     }
 }
+
+actual class Text actual constructor(actual var data: String) : Node()

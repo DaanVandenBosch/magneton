@@ -1,15 +1,18 @@
 package magneton.nodes
 
 import org.w3c.dom.get
+import kotlin.browser.document
 import org.w3c.dom.Node as DomNode
 
-// TODO: share code with JVM implementation
 actual abstract class Node {
     abstract val domNode: DomNode?
 
-    private var _parent: Node? = null
-    val parent: Node? get() = _parent
+    internal var internalParent: Parent? = null
+    val parent: Parent? get() = internalParent
+}
 
+// TODO: share code with JVM implementation
+actual abstract class Parent : Node() {
     private val _children: MutableList<Node> = mutableListOf()
     actual val children: List<Node> = _children
 
@@ -20,7 +23,7 @@ actual abstract class Node {
     internal actual open fun addChild(index: Int, child: Node) {
         if (child.parent != null) {
             child.parent!!._children.remove(child)
-            child._parent = this
+            child.internalParent = this
         }
 
         _children.add(index, child)
@@ -30,7 +33,7 @@ actual abstract class Node {
 
     internal actual open fun removeChildAt(index: Int) {
         val removed = _children.removeAt(index)
-        removed._parent = null
+        removed.internalParent = null
 
         removed.domNode?.let(::domRemoveChild)
     }
@@ -50,4 +53,14 @@ actual abstract class Node {
     internal open fun domRemoveChild(childDomNode: DomNode) {
         domNode?.removeChild(childDomNode)
     }
+}
+
+actual class Text actual constructor(data: String) : Node() {
+    override val domNode = document.createTextNode(data)
+
+    actual var data: String = data
+        set(value) {
+            domNode.replaceData(0, field.length, value)
+            field = value
+        }
 }

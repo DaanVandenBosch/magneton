@@ -2,7 +2,7 @@ package magneton.nodes
 
 import magneton.observable.ReactionDisposer
 
-actual abstract class Component : Node() {
+actual abstract class Component : Parent() {
     internal actual var disposer: ReactionDisposer? = null
 
     actual abstract fun render(): Node

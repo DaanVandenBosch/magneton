@@ -5,7 +5,7 @@ import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLSpanElement
 import kotlin.browser.document
 
-actual abstract class Element : Node() {
+actual abstract class Element : Parent() {
     abstract override val domNode: Element?
 
     private val _attributes: MutableMap<String, Any?> = mutableMapOf()

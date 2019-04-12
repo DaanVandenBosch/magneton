@@ -44,11 +44,11 @@ class NodeTests {
         val cmp = TestComponent()
         render(cmp)
 
-        assertEquals(3, cmp.children[0].children.size)
+        assertEquals(3, (cmp.children[0] as Parent).children.size)
 
         addThird = false
 
-        assertEquals(2, cmp.children[0].children.size)
+        assertEquals(2, (cmp.children[0] as Parent).children.size)
     }
 
     @Test
@@ -78,23 +78,23 @@ class NodeTests {
         }
         val handle = render(cmp)
 
-        val node1 = cmp.children[0].children[0]
-        val node2 = cmp.children[0].children[1]
-        val node3 = cmp.children[0].children[2]
+        val node1 = (cmp.children[0] as Parent).children[0]
+        val node2 = (cmp.children[0] as Parent).children[1]
+        val node3 = (cmp.children[0] as Parent).children[2]
 
         // Force rerender.
         handle.dispose()
         render(cmp)
 
-        assertSame(node1, cmp.children[0].children[0])
-        assertSame(node2, cmp.children[0].children[1])
-        assertSame(node3, cmp.children[0].children[2])
+        assertSame(node1, (cmp.children[0] as Parent).children[0])
+        assertSame(node2, (cmp.children[0] as Parent).children[1])
+        assertSame(node3, (cmp.children[0] as Parent).children[2])
 
         spanInMiddle = false
 
-        assertSame(node1, cmp.children[0].children[0])
-        assertNotSame(node2, cmp.children[0].children[1])
-        assertSame(node3, cmp.children[0].children[2])
+        assertSame(node1, (cmp.children[0] as Parent).children[0])
+        assertNotSame(node2, (cmp.children[0] as Parent).children[1])
+        assertSame(node3, (cmp.children[0] as Parent).children[2])
     }
 
     @Test
@@ -114,10 +114,13 @@ class NodeTests {
         val cmp = OuterCmp()
         render(cmp)
 
-        assertTrue(cmp.children[0] is CenterCmp)
-        assertTrue(cmp.children[0].children[0] is HTMLDivElement)
-        assertTrue(cmp.children[0].children[0].children[0] is InnerCmp)
-        assertTrue(cmp.children[0].children[0].children[0].children[0] is HTMLSpanElement)
+        val c1 = cmp.children[0] as Parent
+        assertTrue(c1 is CenterCmp)
+        val c2 = c1.children[0] as Parent
+        assertTrue(c2 is HTMLDivElement)
+        val c3 = c2.children[0] as Parent
+        assertTrue(c3 is InnerCmp)
+        assertTrue(c3.children[0] is HTMLSpanElement)
     }
 
     @Test
@@ -140,18 +143,18 @@ class NodeTests {
         }
         val handle = render(cmp)
 
-        val innerCmp = cmp.children[0].children[0]
+        val innerCmp = (cmp.children[0] as Parent).children[0]
         assertTrue(innerCmp is Inner1Component)
 
         // Force rerender.
         handle.dispose()
         render(cmp)
 
-        assertSame(innerCmp, cmp.children[0].children[0])
+        assertSame(innerCmp, (cmp.children[0] as Parent).children[0])
 
         useInner1 = false
 
-        assertTrue(cmp.children[0].children[0] is Inner2Component)
-        assertNotSame(innerCmp, cmp.children[0].children[0])
+        assertTrue((cmp.children[0] as Parent).children[0] is Inner2Component)
+        assertNotSame(innerCmp, (cmp.children[0] as Parent).children[0])
     }
 }

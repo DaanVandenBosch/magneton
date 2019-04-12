@@ -1,17 +1,16 @@
 package magneton.nodes
 
-import magneton.GlobalState
 import magneton.observable.ReactionDisposer
 import magneton.observable.reaction
 import kotlin.reflect.KClass
 
-expect abstract class Component() : Node {
+expect abstract class Component() : Parent {
     internal var disposer: ReactionDisposer?
 
     abstract fun render(): Node
 }
 
-fun <T : Component> Node.component(
+fun <T : Component> Parent.component(
         createComponent: () -> T,
         componentClass: KClass<T>
 ): T {
@@ -62,7 +61,7 @@ fun <T : Component> Node.component(
  * div { component(createComponent) }
  * ```
  */
-inline fun <reified T : Component> Node.component(
+inline fun <reified T : Component> Parent.component(
         noinline createComponent: () -> T
 ): T =
         component(createComponent, T::class)

@@ -1,6 +1,6 @@
 package magneton.nodes
 
-actual abstract class Element : Node() {
+actual abstract class Element : Parent() {
     private val _attributes: MutableMap<String, Any?> = mutableMapOf()
     actual val attributes: Map<String, Any?> = _attributes
 
@@ -11,6 +11,10 @@ actual abstract class Element : Node() {
     actual open fun setAttribute(key: String, value: Any?) {
         _attributes[key] = value
         NodeState.Global.get()!!.updatedAttributes.add(key)
+    }
+
+    actual open fun setAttribute(key: String, value: ElementAttributeValue?) {
+        setAttribute(key, value as Any?)
     }
 
     @Suppress("UNCHECKED_CAST")

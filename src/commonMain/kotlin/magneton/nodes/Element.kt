@@ -7,7 +7,7 @@ interface ElementAttributeValue {
     fun toStringValue(): String
 }
 
-expect abstract class Element() : Node {
+expect abstract class Element() : Parent {
     val attributes: Map<String, Any?>
 
     open fun <T> getAttribute(key: String): T?
@@ -20,7 +20,7 @@ abstract class HTMLElement : Element()
 expect class HTMLDivElement() : HTMLElement
 expect class HTMLSpanElement() : HTMLElement
 
-fun <T : Element> Node.addElement(
+fun <T : Element> Parent.addElement(
         create: () -> T,
         elementClass: KClass<T>,
         block: T.() -> Unit
@@ -62,16 +62,16 @@ fun <T : Element> Node.addElement(
     return node
 }
 
-inline fun <reified T : Element> Node.addElement(
+inline fun <reified T : Element> Parent.addElement(
         noinline create: () -> T,
         noinline block: T.() -> Unit
 ): T =
         addElement(create, T::class, block)
 
-fun Node.div(block: HTMLDivElement.() -> Unit): HTMLDivElement =
+fun Parent.div(block: HTMLDivElement.() -> Unit): HTMLDivElement =
         addElement(::HTMLDivElement, block)
 
-fun Node.span(block: HTMLSpanElement.() -> Unit): HTMLSpanElement =
+fun Parent.span(block: HTMLSpanElement.() -> Unit): HTMLSpanElement =
         addElement(::HTMLSpanElement, block)
 
 var HTMLElement.hidden: Boolean

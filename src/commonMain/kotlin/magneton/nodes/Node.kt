@@ -1,9 +1,9 @@
 package magneton.nodes
 
 @DslMarker
-annotation class NodeMarker
+annotation class NodeDslMarker
 
-@NodeMarker
+@NodeDslMarker
 expect abstract class Node() {
     val children: List<Node>
 

@@ -1,12 +1,14 @@
 package magneton.nodes
 
-import org.w3c.dom.Element
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLSpanElement
 import kotlin.browser.document
+import org.w3c.dom.Element as DomElement
+import org.w3c.dom.HTMLDivElement as DomHTMLDivElement
+import org.w3c.dom.HTMLElement as DomHTMLElement
+import org.w3c.dom.HTMLSpanElement as DomHTMLSpanElement
+import org.w3c.dom.HTMLImageElement as DomHTMLImageElement
 
 actual abstract class Element : Parent() {
-    abstract override val domNode: Element?
+    abstract override val domNode: DomElement?
 
     private val _attributes: MutableMap<String, Any?> = mutableMapOf()
     actual val attributes: Map<String, Any?> = _attributes
@@ -39,10 +41,18 @@ actual abstract class Element : Parent() {
     }
 }
 
-actual class HTMLDivElement : HTMLElement() {
-    override val domNode = document.createElement("div") as HTMLDivElement
+actual open class HTMLElement actual constructor(tagName: String) : Element() {
+    override val domNode = document.createElement(tagName) as DomHTMLElement
 }
 
-actual class HTMLSpanElement : HTMLElement() {
-    override val domNode = document.createElement("span") as HTMLSpanElement
+actual class HTMLDivElement : HTMLElement("div") {
+    override val domNode = super.domNode as DomHTMLDivElement
+}
+
+actual class HTMLSpanElement : HTMLElement("span") {
+    override val domNode = super.domNode as DomHTMLSpanElement
+}
+
+actual class HTMLImageElement : HTMLElement("img") {
+    override val domNode = super.domNode as DomHTMLImageElement
 }

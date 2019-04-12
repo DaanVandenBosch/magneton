@@ -22,5 +22,8 @@ actual abstract class Element : Parent() {
             _attributes.remove(key) as T?
 }
 
-actual class HTMLDivElement : HTMLElement()
-actual class HTMLSpanElement : HTMLElement()
+actual open class HTMLElement actual constructor(tagName: String) : Element()
+
+actual class HTMLDivElement : HTMLElement("div")
+actual class HTMLSpanElement : HTMLElement("span")
+actual class HTMLImageElement : HTMLElement("img")

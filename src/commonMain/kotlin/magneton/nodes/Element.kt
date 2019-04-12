@@ -16,9 +16,11 @@ expect abstract class Element() : Parent {
     open fun <T> removeAttribute(key: String): T?
 }
 
-abstract class HTMLElement : Element()
+expect open class HTMLElement(tagName: String) : Element
+
 expect class HTMLDivElement() : HTMLElement
 expect class HTMLSpanElement() : HTMLElement
+expect class HTMLImageElement() : HTMLElement
 
 fun <T : Element> Parent.addElement(
         create: () -> T,
@@ -74,6 +76,18 @@ fun Parent.div(block: HTMLDivElement.() -> Unit): HTMLDivElement =
 fun Parent.span(block: HTMLSpanElement.() -> Unit): HTMLSpanElement =
         addElement(::HTMLSpanElement, block)
 
+fun Parent.header(block: HTMLElement.() -> Unit): HTMLElement =
+        addElement({ HTMLElement("header") }, block)
+
+fun Parent.footer(block: HTMLElement.() -> Unit): HTMLElement =
+        addElement({ HTMLElement("footer") }, block)
+
+fun Parent.main(block: HTMLElement.() -> Unit): HTMLElement =
+        addElement({ HTMLElement("main") }, block)
+
+fun Parent.img(block: HTMLImageElement.() -> Unit): HTMLImageElement =
+        addElement(::HTMLImageElement, block)
+
 var HTMLElement.hidden: Boolean
     get() = getAttribute("hidden") ?: false
     set(value) {
@@ -86,3 +100,10 @@ fun HTMLElement.style(block: InlineCSSStyleDeclaration.() -> Unit) {
     decl.invoke(block)
     setAttribute("style", decl)
 }
+
+var HTMLImageElement.src: String?
+    get() = getAttribute("src")
+    set(value) {
+        if (value != null) setAttribute("src")
+        else removeAttribute<Any>("src")
+    }

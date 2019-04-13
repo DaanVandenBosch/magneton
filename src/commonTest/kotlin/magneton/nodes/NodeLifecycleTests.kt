@@ -62,6 +62,23 @@ class NodeLifecycleTests {
     }
 
     @Test
+    fun removed_nodes_should_be_unmounted() {
+        val cmp = OuterCmp()
+        render(cmp)
+        notifyDidMount(cmp)
+
+        assertEquals(3, cmp.renders)
+        assertEquals(3, cmp.mounts)
+        assertEquals(0, cmp.unmounts)
+
+        cmp.addCmps = false
+
+        assertEquals(3, cmp.renders)
+        assertEquals(3, cmp.mounts)
+        assertEquals(3, cmp.unmounts)
+    }
+
+    @Test
     fun lifecycle_methods_should_not_be_called_on_removed_nodes() {
         val cmp = OuterCmp()
         render(cmp)

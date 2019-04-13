@@ -5,10 +5,15 @@ import kotlin.browser.document
 import org.w3c.dom.Node as DomNode
 
 actual abstract class Node {
+    internal actual var isMounted: Boolean = false
+
     abstract val domNode: DomNode?
 
     internal var internalParent: Parent? = null
     val parent: Parent? get() = internalParent
+
+    actual open fun didMount() {}
+    actual open fun willUnmount() {}
 }
 
 // TODO: share code with JVM implementation
@@ -31,6 +36,12 @@ actual abstract class Parent : Node() {
         child.domNode?.let { domAddChild(index, it) }
     }
 
+    internal open fun domAddChild(index: Int, childDomNode: DomNode) {
+        domNode?.let { domNode ->
+            domNode.insertBefore(childDomNode, domNode.childNodes[index])
+        }
+    }
+
     internal actual open fun removeChildAt(index: Int) {
         val removed = _children.removeAt(index)
         removed.internalParent = null
@@ -41,12 +52,6 @@ actual abstract class Parent : Node() {
     internal actual open fun removeChildrenFrom(index: Int) {
         for (i in index..children.lastIndex) {
             removeChildAt(index)
-        }
-    }
-
-    internal open fun domAddChild(index: Int, childDomNode: DomNode) {
-        domNode?.let { domNode ->
-            domNode.insertBefore(childDomNode, domNode.childNodes[index])
         }
     }
 

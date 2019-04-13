@@ -13,7 +13,7 @@ actual abstract class Component : Parent() {
     actual abstract fun render(): Node
 
     override fun addChild(index: Int, child: Node) {
-        check(children.isEmpty() && index == 0) {
+        check(children.isEmpty()) {
             "A component can have at most one direct child."
         }
 
@@ -28,8 +28,8 @@ actual abstract class Component : Parent() {
     }
 }
 
-fun renderToDom(domNode: DomNode, component: Component) {
-    reaction {
+fun renderToDom(domNode: DomNode, component: Component): ReactionDisposer {
+    val disposer = reaction {
         NodeState.Global.set(NodeState())
 
         try {
@@ -39,4 +39,6 @@ fun renderToDom(domNode: DomNode, component: Component) {
         }
     }
     domNode.appendChild(component.domNode!!)
+    notifyDidMount(component)
+    return disposer
 }

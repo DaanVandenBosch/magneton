@@ -34,11 +34,16 @@ fun <T : Element> Parent.addElement(
     if (node == null || node::class != elementClass) {
         // TODO: is replaceChild faster than removeChild + appendChild in DOM?
         if (node != null) {
+            notifyWillUnmount(node)
             removeChildAt(index)
         }
 
         node = create()
         addChild(index, node)
+
+        if (isMounted) {
+            notifyDidMount(node)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -53,6 +58,12 @@ fun <T : Element> Parent.addElement(
         for (key in node.attributes.keys) {
             if (key !in state.updatedAttributes) {
                 node.removeAttribute<Any>(key)
+            }
+        }
+
+        if (isMounted) {
+            for (i in state.childIndex..node.children.lastIndex) {
+                notifyWillUnmount(node.children[i])
             }
         }
 

@@ -4,7 +4,20 @@ package magneton.nodes
 annotation class NodeDslMarker
 
 @NodeDslMarker
-expect abstract class Node()
+expect abstract class Node() {
+    // Note: this property will be set to false before the node is actually unmounted but after [willUnmount] is called.
+    internal var isMounted: Boolean
+
+    /**
+     * Called after the node is first rendered and added to the DOM.
+     */
+    open fun didMount()
+
+    /**
+     * Called before the node is removed from the DOM.
+     */
+    open fun willUnmount()
+}
 
 expect abstract class Parent() : Node {
     val children: List<Node>
@@ -38,4 +51,27 @@ fun Parent.text(data: String): Text {
     }
 
     return node
+}
+
+internal fun notifyDidMount(node: Node) {
+    if (node.isMounted) return
+
+    node.isMounted = true
+    node.didMount()
+
+    if (node is Parent) {
+        node.children.forEach(::notifyDidMount)
+    }
+}
+
+internal fun notifyWillUnmount(node: Node) {
+    if (!node.isMounted) return
+
+    node.willUnmount()
+
+    if (node is Parent) {
+        node.children.forEach(::notifyWillUnmount)
+    }
+
+    node.isMounted = false
 }

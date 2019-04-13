@@ -7,6 +7,9 @@ import kotlin.reflect.KClass
 expect abstract class Component() : Parent {
     internal var disposer: ReactionDisposer?
 
+    /**
+     * Called right before the component is first added to the node tree and after each change to one of its observable dependencies.
+     */
     abstract fun render(): Node
 }
 
@@ -23,6 +26,7 @@ fun <T : Component> Parent.component(
     } else {
         // TODO: optimize with replace
         if (node != null) {
+            notifyWillUnmount(node)
             (node as? Component)?.disposer?.dispose()
             removeChildAt(index)
         }
@@ -30,7 +34,7 @@ fun <T : Component> Parent.component(
         val cmp = createComponent()
 
         cmp.disposer = reaction {
-            val prevState = NodeState.Global.set(NodeState(index))
+            val prevState = NodeState.Global.set(NodeState())
 
             try {
                 cmp.render()
@@ -39,8 +43,13 @@ fun <T : Component> Parent.component(
             }
         }
 
-        // Add as child after rendering to make sure the component's DOM node exists.
+        // Add as child after rendering to make sure the component's DOM node exists and can be appended to the parent's DOM node.
         addChild(index, cmp)
+
+        if (isMounted) {
+            notifyDidMount(cmp)
+        }
+
         return cmp
     }
 }

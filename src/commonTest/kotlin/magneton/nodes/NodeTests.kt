@@ -52,7 +52,7 @@ class NodeTests {
     }
 
     @Test
-    fun adding_multiple_child_nodes_toA_component_should_throw() {
+    fun adding_multiple_child_nodes_to_a_component_should_throw() {
         val cmp = object : Component() {
             override fun render(): Node {
                 div { }
@@ -95,66 +95,5 @@ class NodeTests {
         assertSame(node1, (cmp.children[0] as Parent).children[0])
         assertNotSame(node2, (cmp.children[0] as Parent).children[1])
         assertSame(node3, (cmp.children[0] as Parent).children[2])
-    }
-
-    @Test
-    fun components_should_be_nestable() {
-        class InnerCmp : Component() {
-            override fun render() = span {}
-        }
-
-        class CenterCmp : Component() {
-            override fun render() = div { component(::InnerCmp) }
-        }
-
-        class OuterCmp : Component() {
-            override fun render() = component(::CenterCmp)
-        }
-
-        val cmp = OuterCmp()
-        render(cmp)
-
-        val c1 = cmp.children[0] as Parent
-        assertTrue(c1 is CenterCmp)
-        val c2 = c1.children[0] as Parent
-        assertTrue(c2 is HTMLDivElement)
-        val c3 = c2.children[0] as Parent
-        assertTrue(c3 is InnerCmp)
-        assertTrue(c3.children[0] is HTMLSpanElement)
-    }
-
-    @Test
-    fun components_should_only_be_replaced_when_necessary() {
-        class Inner1Component : Component() {
-            override fun render() = span {}
-        }
-
-        class Inner2Component : Component() {
-            override fun render() = div {}
-        }
-
-        var useInner1 by observable(true)
-
-        val cmp = object : Component() {
-            override fun render() = div {
-                if (useInner1) component(::Inner1Component)
-                else component(::Inner2Component)
-            }
-        }
-        val handle = render(cmp)
-
-        val innerCmp = (cmp.children[0] as Parent).children[0]
-        assertTrue(innerCmp is Inner1Component)
-
-        // Force rerender.
-        handle.dispose()
-        render(cmp)
-
-        assertSame(innerCmp, (cmp.children[0] as Parent).children[0])
-
-        useInner1 = false
-
-        assertTrue((cmp.children[0] as Parent).children[0] is Inner2Component)
-        assertNotSame(innerCmp, (cmp.children[0] as Parent).children[0])
     }
 }

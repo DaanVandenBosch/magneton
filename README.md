@@ -10,7 +10,7 @@ class TodoModel(title: String) {
 }
 
 object TodoStore {
-    val todos: MutableList<TodoModel> by observable(mutableListOf())
+    var todos: List<TodoModel> by observable(listOf())
 }
 
 class AppComponent : Component {
@@ -34,7 +34,14 @@ fun main() {
 ## TODO
 
 - Finish MobX-inspired observables implementation
-- Allow style definitions inside component code (should still be rendered to CSS rules in a stylesheet?)
-- Automatically generate all DOM manipulation code (see https://github.com/JetBrains/kotlin/tree/master/libraries/tools/idl2k for ideas)
+    - Observable collections
+    - Performance
+- Allow style definitions inside component code (should still be rendered to CSS rules in a stylesheet to support pseudo classes?)
+- Automatically generate all DOM manipulation code (see [https://github.com/JetBrains/kotlin/tree/master/libraries/tools/idl2k] for ideas)
 - Allow rendering to HTML on the JVM
 - Routing
+- Event handling
+- Documentation
+    - Quick start
+    - Reference docs
+    - Tutorials

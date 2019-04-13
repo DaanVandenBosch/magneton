@@ -1,6 +1,11 @@
 package magneton.nodes
 
-actual abstract class Node
+actual abstract class Node {
+    internal actual var isMounted: Boolean = false
+
+    actual open fun didMount() {}
+    actual open fun willUnmount() {}
+}
 
 // TODO: share code with JS implementation
 actual abstract class Parent : Node() {

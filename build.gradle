@@ -99,12 +99,12 @@ kotlinFrontend {
         sourceMapEnabled = true
         contentPath = file("src/jsMain/web")
         mode = "development"
-        port = 3300
+        port = 3400
     }
 
     karma {
-        port = 3303
-        runnerPort = 3304
+        port = 3403
+        runnerPort = 3404
         reporters = ['progress']
         frameworks = ['qunit']
     }

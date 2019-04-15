@@ -4,8 +4,8 @@ import kotlin.browser.document
 import org.w3c.dom.Element as DomElement
 import org.w3c.dom.HTMLDivElement as DomHTMLDivElement
 import org.w3c.dom.HTMLElement as DomHTMLElement
-import org.w3c.dom.HTMLSpanElement as DomHTMLSpanElement
 import org.w3c.dom.HTMLImageElement as DomHTMLImageElement
+import org.w3c.dom.HTMLSpanElement as DomHTMLSpanElement
 
 actual abstract class Element : Parent() {
     abstract override val domNode: DomElement
@@ -31,7 +31,7 @@ actual abstract class Element : Parent() {
             _attributes[key] = value
         }
 
-        NodeState.Global.get()!!.updatedAttributes.add(key)
+        context!!.nodeState.updatedAttributes.add(key)
     }
 
     @Suppress("UNCHECKED_CAST")

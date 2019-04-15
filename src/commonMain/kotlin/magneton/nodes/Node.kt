@@ -40,7 +40,7 @@ expect class Text(data: String) : Node {
 }
 
 fun Parent.text(data: String): Text {
-    val index = NodeState.Global.get()!!.childIndex++
+    val index = context!!.nodeState.childIndex++
     var node = children.getOrNull(index)
 
     if (node == null || node::class != Text::class) {

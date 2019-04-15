@@ -29,7 +29,9 @@ fun <T : Element> Parent.addElement(
         cssClass: CSSClassRule? = null,
         block: (T.() -> Unit)? = null
 ): T {
-    val prevState = NodeState.Global.set(NodeState())!!
+    val ctx = context!!
+    val prevState = ctx.nodeState
+    ctx.nodeState = NodeState()
     val index = prevState.childIndex++
     var node = children.getOrNull(index)
 
@@ -41,7 +43,7 @@ fun <T : Element> Parent.addElement(
         }
 
         node = create()
-        node.context = context
+        node.context = ctx
         addChild(index, node)
 
         if (isMounted) {
@@ -54,14 +56,14 @@ fun <T : Element> Parent.addElement(
 
     try {
         cssClass?.let {
-            context?.styleSheetRegistry?.register(it.styleSheet)
+            ctx.styleSheetRegistry.register(it.styleSheet)
             node.className = it.selector.uniqueName
         }
 
         block?.invoke(node)
 
         // Clean up implicitly removed attributes and child nodes.
-        val state = NodeState.Global.get()!!
+        val state = ctx.nodeState
 
         for (key in node.attributes.keys) {
             if (key !in state.updatedAttributes) {
@@ -77,7 +79,7 @@ fun <T : Element> Parent.addElement(
 
         node.removeChildrenFrom(state.childIndex)
     } finally {
-        NodeState.Global.restore(prevState)
+        ctx.nodeState = prevState
     }
 
     return node

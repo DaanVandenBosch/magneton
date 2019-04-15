@@ -10,7 +10,7 @@ actual abstract class Element : Parent() {
 
     actual open fun setAttribute(key: String, value: Any?) {
         _attributes[key] = value
-        NodeState.Global.get()!!.updatedAttributes.add(key)
+       context!!.nodeState.updatedAttributes.add(key)
     }
 
     actual open fun setAttribute(key: String, value: ElementAttributeValue?) {

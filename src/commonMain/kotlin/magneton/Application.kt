@@ -31,15 +31,10 @@ internal fun Application.internalStart() {
         rootComponent.context = context
 
         disposer = reaction {
-            NodeState.Global.set(NodeState())
-
-            try {
-                rootComponent.render()
-                mount()
-                notifyDidMount(rootComponent)
-            } finally {
-                NodeState.Global.clear()
-            }
+            context.nodeState = NodeState()
+            rootComponent.render()
+            mount()
+            notifyDidMount(rootComponent)
         }
     }
 }

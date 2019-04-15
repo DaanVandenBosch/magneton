@@ -17,7 +17,8 @@ fun <T : Component> Parent.component(
         createComponent: () -> T,
         componentClass: KClass<T>
 ): T {
-    val index = NodeState.Global.get()!!.childIndex++
+    val ctx = context!!
+    val index = ctx.nodeState.childIndex++
     val node = children.getOrNull(index)
 
     if (node != null && node::class == componentClass) {
@@ -32,15 +33,16 @@ fun <T : Component> Parent.component(
         }
 
         val cmp = createComponent()
-        cmp.context = context
+        cmp.context = ctx
 
         cmp.disposer = reaction {
-            val prevState = NodeState.Global.set(NodeState())
+            val prevState = ctx.nodeState
+            ctx.nodeState = NodeState()
 
             try {
                 cmp.render()
             } finally {
-                NodeState.Global.restore(prevState)
+                ctx.nodeState = prevState
             }
         }
 

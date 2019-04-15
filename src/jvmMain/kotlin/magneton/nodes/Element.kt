@@ -10,7 +10,7 @@ actual abstract class Element : Parent() {
 
     actual open fun setAttribute(key: String, value: Any?) {
         _attributes[key] = value
-       context!!.nodeState.updatedAttributes.add(key)
+        context!!.nodeState.updatedAttributes.add(key)
     }
 
     actual open fun setAttribute(key: String, value: ElementAttributeValue?) {
@@ -22,8 +22,6 @@ actual abstract class Element : Parent() {
             _attributes.remove(key) as T?
 }
 
-actual open class HTMLElement actual constructor(tagName: String) : Element()
+actual open class HTMLElement actual constructor(actual val tagName: String) : Element()
 
-actual class HTMLDivElement : HTMLElement("div")
-actual class HTMLSpanElement : HTMLElement("span")
-actual class HTMLImageElement : HTMLElement("img")
+actual class HTMLImageElement actual constructor(tagName: String) : HTMLElement(tagName)

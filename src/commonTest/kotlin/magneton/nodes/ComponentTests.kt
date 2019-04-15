@@ -26,7 +26,6 @@ class ComponentTests {
         render(cmp)
 
         val c0 = cmp.children[0] as Parent
-        assertTrue(c0 is HTMLDivElement)
         assertTrue(c0.children[0] is InnerCmp)
         assertTrue(c0.children[1] is InnerCmp)
         assertTrue(c0.children[2] is InnerCmp)
@@ -52,10 +51,8 @@ class ComponentTests {
         val c1 = cmp.children[0] as Parent
         assertTrue(c1 is CenterCmp)
         val c2 = c1.children[0] as Parent
-        assertTrue(c2 is HTMLDivElement)
         val c3 = c2.children[0] as Parent
         assertTrue(c3 is InnerCmp)
-        assertTrue(c3.children[0] is HTMLSpanElement)
     }
 
     @Test

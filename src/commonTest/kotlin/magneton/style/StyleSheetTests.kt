@@ -1,7 +1,7 @@
 package magneton.style
 
 import magneton.nodes.Component
-import magneton.nodes.HTMLDivElement
+import magneton.nodes.HTMLElement
 import magneton.nodes.className
 import magneton.nodes.div
 import magneton.render
@@ -14,7 +14,7 @@ class StyleSheetTests {
     fun elements_can_reference_stylesheet_rules() {
         val cmp = TestCmp()
         val app = render(cmp)
-        val div = cmp.children[0] as HTMLDivElement
+        val div = cmp.children[0] as HTMLElement
 
         assertEquals(div.className, TestCmp.Styles.test.selector.uniqueName)
         assertTrue(TestCmp.Styles in app.context.styleSheetRegistry.sheets)

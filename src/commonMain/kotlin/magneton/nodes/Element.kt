@@ -8,7 +8,7 @@ interface ElementAttributeValue {
     fun toStringValue(): String
 }
 
-expect abstract class Element() : Parent {
+expect abstract class Element internal constructor() : Parent {
     val attributes: Map<String, Any?>
 
     open fun <T> getAttribute(key: String): T?
@@ -17,15 +17,16 @@ expect abstract class Element() : Parent {
     open fun <T> removeAttribute(key: String): T?
 }
 
-expect open class HTMLElement(tagName: String) : Element
+expect open class HTMLElement internal constructor(tagName: String) : Element {
+    val tagName: String
+}
 
-expect class HTMLDivElement() : HTMLElement
-expect class HTMLSpanElement() : HTMLElement
-expect class HTMLImageElement() : HTMLElement
+expect class HTMLImageElement internal constructor(tagName: String) : HTMLElement
 
 fun <T : Element> Parent.addElement(
         elementClass: KClass<T>,
-        create: () -> T,
+        create: (String) -> T,
+        tagName: String,
         cssClass: CSSClassRule? = null,
         block: (T.() -> Unit)? = null
 ): T {
@@ -34,15 +35,16 @@ fun <T : Element> Parent.addElement(
     ctx.nodeState = NodeState()
     val index = prevState.childIndex++
     var node = children.getOrNull(index)
+    val tagNameUpper = tagName.toUpperCase()
 
-    if (node == null || node::class != elementClass) {
+    if (node == null || node::class != elementClass || (node is HTMLElement && node.tagName != tagNameUpper)) {
         // TODO: is replaceChild faster than removeChild + appendChild in DOM?
         if (node != null) {
             notifyWillUnmount(node)
             removeChildAt(index)
         }
 
-        node = create()
+        node = create(tagNameUpper)
         node.context = ctx
         addChild(index, node)
 
@@ -86,29 +88,51 @@ fun <T : Element> Parent.addElement(
 }
 
 inline fun <reified T : Element> Parent.addElement(
-        noinline create: () -> T,
+        noinline create: (String) -> T,
+        tagName: String,
         cssClass: CSSClassRule? = null,
         noinline block: (T.() -> Unit)? = null
 ): T =
-        addElement(T::class, create, cssClass, block)
+        addElement(T::class, create, tagName, cssClass, block)
 
-fun Parent.div(cssClass: CSSClassRule? = null, block: (HTMLDivElement.() -> Unit)? = null): HTMLDivElement =
-        addElement(::HTMLDivElement, cssClass, block)
+fun Parent.div(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "div", cssClass, block)
 
-fun Parent.span(cssClass: CSSClassRule? = null, block: (HTMLSpanElement.() -> Unit)? = null): HTMLSpanElement =
-        addElement(::HTMLSpanElement, cssClass, block)
+fun Parent.span(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "span", cssClass, block)
 
 fun Parent.header(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
-        addElement({ HTMLElement("header") }, cssClass, block)
+        addElement(::HTMLElement, "header", cssClass, block)
 
 fun Parent.footer(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
-        addElement({ HTMLElement("footer") }, cssClass, block)
+        addElement(::HTMLElement, "footer", cssClass, block)
 
 fun Parent.main(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
-        addElement({ HTMLElement("main") }, cssClass, block)
+        addElement(::HTMLElement, "main", cssClass, block)
 
 fun Parent.img(cssClass: CSSClassRule? = null, block: (HTMLImageElement.() -> Unit)? = null): HTMLImageElement =
-        addElement(::HTMLImageElement, cssClass, block)
+        addElement(::HTMLImageElement, "img", cssClass, block)
+
+fun Parent.table(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "table", cssClass, block)
+
+fun Parent.thead(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "thead", cssClass, block)
+
+fun Parent.tbody(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "tbody", cssClass, block)
+
+fun Parent.tfoot(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "tfoot", cssClass, block)
+
+fun Parent.tr(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "tr", cssClass, block)
+
+fun Parent.td(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "td", cssClass, block)
+
+fun Parent.th(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "th", cssClass, block)
 
 var Element.className: String
     get() = getAttribute("class") ?: ""
@@ -116,11 +140,25 @@ var Element.className: String
         setAttribute("class", value)
     }
 
+var HTMLElement.title: String?
+    get() = getAttribute("title")
+    set(value) {
+        if (value != null) setAttribute("title", value)
+        else removeAttribute<Any>("title")
+    }
+
 var HTMLElement.hidden: Boolean
     get() = getAttribute("hidden") ?: false
     set(value) {
         if (value) setAttribute("hidden")
         else removeAttribute<Any>("hidden")
+    }
+
+var HTMLElement.tabIndex: Int?
+    get() = getAttribute("tabIndex")
+    set(value) {
+        if (value != null) setAttribute("tabIndex", value)
+        else removeAttribute<Any>("tabIndex")
     }
 
 fun HTMLElement.style(block: InlineCSSStyleDeclaration.() -> Unit) {
@@ -132,6 +170,20 @@ fun HTMLElement.style(block: InlineCSSStyleDeclaration.() -> Unit) {
 var HTMLImageElement.src: String?
     get() = getAttribute("src")
     set(value) {
-        if (value != null) setAttribute("src")
+        if (value != null) setAttribute("src", value)
         else removeAttribute<Any>("src")
+    }
+
+var HTMLImageElement.width: Int?
+    get() = getAttribute("width")
+    set(value) {
+        if (value != null) setAttribute("width", value)
+        else removeAttribute<Any>("width")
+    }
+
+var HTMLImageElement.height: Int?
+    get() = getAttribute("height")
+    set(value) {
+        if (value != null) setAttribute("height", value)
+        else removeAttribute<Any>("height")
     }

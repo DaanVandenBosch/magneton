@@ -41,18 +41,10 @@ actual abstract class Element : Parent() {
     }
 }
 
-actual open class HTMLElement actual constructor(tagName: String) : Element() {
+actual open class HTMLElement actual constructor(actual val tagName: String) : Element() {
     override val domNode = document.createElement(tagName) as DomHTMLElement
 }
 
-actual class HTMLDivElement : HTMLElement("div") {
-    override val domNode = super.domNode as DomHTMLDivElement
-}
-
-actual class HTMLSpanElement : HTMLElement("span") {
-    override val domNode = super.domNode as DomHTMLSpanElement
-}
-
-actual class HTMLImageElement : HTMLElement("img") {
+actual class HTMLImageElement actual constructor(tagName: String) : HTMLElement(tagName) {
     override val domNode = super.domNode as DomHTMLImageElement
 }

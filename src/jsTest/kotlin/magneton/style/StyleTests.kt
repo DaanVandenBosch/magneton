@@ -1,6 +1,9 @@
 package magneton.style
 
-import magneton.nodes.*
+import magneton.nodes.Component
+import magneton.nodes.HTMLElement
+import magneton.nodes.div
+import magneton.nodes.style
 import magneton.render
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -18,7 +21,7 @@ class StyleTests {
         }
         render(cmp)
 
-        val div = cmp.children[0] as HTMLDivElement
+        val div = cmp.children[0] as HTMLElement
         assertEquals("50em", div.domNode.style.paddingBottom)
         assertEquals("10px", div.domNode.style.borderRadius)
     }

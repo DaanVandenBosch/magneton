@@ -20,14 +20,14 @@ class NodeTests {
         render(cmp)
 
         assertEquals(1, cmp.children.size)
-        val div1 = cmp.children[0]
-        assertTrue(div1 is HTMLDivElement)
+        val div1 = cmp.children[0] as HTMLElement
+        assertEquals("DIV", div1.tagName)
         assertEquals(2, div1.children.size)
-        assertTrue(div1.children[0] is HTMLDivElement)
-        val span = div1.children[1]
-        assertTrue(span is HTMLSpanElement)
+        assertEquals("DIV", (div1.children[0] as HTMLElement).tagName)
+        val span = div1.children[1] as HTMLElement
+        assertEquals("SPAN", span.tagName)
         assertEquals(1, span.children.size)
-        assertTrue(span.children[0] is HTMLDivElement)
+        assertEquals("DIV", (span.children[0] as HTMLElement).tagName)
     }
 
     @Test

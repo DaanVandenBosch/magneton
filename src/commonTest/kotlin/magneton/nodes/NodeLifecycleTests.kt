@@ -1,30 +1,29 @@
 package magneton.nodes
 
 import magneton.observable.observable
+import magneton.render
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class NodeLifecycleTests {
     class InnerCmp(private val outerCmp: OuterCmp) : Component() {
         override fun render(): Node {
-            outerCmp.renders++
+            outerCmp.events.add("render")
             return div {}
         }
 
         override fun didMount() {
-            outerCmp.mounts++
+            outerCmp.events.add("mount")
         }
 
         override fun willUnmount() {
-            outerCmp.unmounts++
+            outerCmp.events.add("unmount")
         }
     }
 
     class OuterCmp : Component() {
         var addCmps by observable(true)
-        var renders = 0
-        var mounts = 0
-        var unmounts = 0
+        var events = mutableListOf<String>()
 
         override fun render() = div {
             if (this@OuterCmp.addCmps) {
@@ -42,68 +41,59 @@ class NodeLifecycleTests {
     @Test
     fun lifecycle_methods_should_be_called_at_the_right_time() {
         val cmp = OuterCmp()
-        render(cmp)
+        val app = render(cmp)
 
-        assertEquals(3, cmp.renders)
-        assertEquals(0, cmp.mounts)
-        assertEquals(0, cmp.unmounts)
+        assertEquals(6, cmp.events.size)
+        for (i in 0..2)
+            assertEquals("render", cmp.events[i], "event $i should be render")
+        for (i in 3..5)
+            assertEquals("mount", cmp.events[i], "event $i should be mount")
 
-        notifyDidMount(cmp)
+        app.stop()
 
-        assertEquals(3, cmp.renders)
-        assertEquals(3, cmp.mounts)
-        assertEquals(0, cmp.unmounts)
-
-        notifyWillUnmount(cmp)
-
-        assertEquals(3, cmp.renders)
-        assertEquals(3, cmp.mounts)
-        assertEquals(3, cmp.unmounts)
+        assertEquals(9, cmp.events.size)
+        for (i in 6..8)
+            assertEquals("unmount", cmp.events[i], "event $i should be unmount")
     }
 
     @Test
     fun removed_nodes_should_be_unmounted() {
         val cmp = OuterCmp()
         render(cmp)
-        notifyDidMount(cmp)
 
-        assertEquals(3, cmp.renders)
-        assertEquals(3, cmp.mounts)
-        assertEquals(0, cmp.unmounts)
+        assertEquals(6, cmp.events.size)
+        for (i in 0..2)
+            assertEquals("render", cmp.events[i], "event $i should be render")
+        for (i in 3..5)
+            assertEquals("mount", cmp.events[i], "event $i should be mount")
 
         cmp.addCmps = false
 
-        assertEquals(3, cmp.renders)
-        assertEquals(3, cmp.mounts)
-        assertEquals(3, cmp.unmounts)
+        assertEquals(9, cmp.events.size)
+        for (i in 6..8)
+            assertEquals("unmount", cmp.events[i], "event $i should be unmount")
     }
 
     @Test
     fun lifecycle_methods_should_not_be_called_on_removed_nodes() {
         val cmp = OuterCmp()
-        render(cmp)
+        val app = render(cmp)
 
-        assertEquals(3, cmp.renders)
-        assertEquals(0, cmp.mounts)
-        assertEquals(0, cmp.unmounts)
-
-        notifyDidMount(cmp)
-
-        assertEquals(3, cmp.renders)
-        assertEquals(3, cmp.mounts)
-        assertEquals(0, cmp.unmounts)
+        assertEquals(6, cmp.events.size)
+        for (i in 0..2)
+            assertEquals("render", cmp.events[i], "event $i should be render")
+        for (i in 3..5)
+            assertEquals("mount", cmp.events[i], "event $i should be mount")
 
         cmp.addCmps = false
 
-        assertEquals(3, cmp.renders)
-        assertEquals(3, cmp.mounts)
-        assertEquals(3, cmp.unmounts)
+        assertEquals(9, cmp.events.size)
+        for (i in 6..8)
+            assertEquals("unmount", cmp.events[i], "event $i should be unmount")
 
-        // This won't change the number of unmounts.
-        notifyWillUnmount(cmp)
+        // This won't trigger any inner component unmounts.
+        app.stop()
 
-        assertEquals(3, cmp.renders)
-        assertEquals(3, cmp.mounts)
-        assertEquals(3, cmp.unmounts)
+        assertEquals(9, cmp.events.size)
     }
 }

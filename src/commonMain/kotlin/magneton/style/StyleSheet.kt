@@ -3,16 +3,12 @@ package magneton.style
 import kotlin.reflect.KProperty
 
 open class StyleSheet {
-    companion object {
-        val cssClasses = mutableMapOf<String, CSSSelector.Class>()
-    }
-
-    private val rules = mutableMapOf<CSSSelector, StyleRule>()
+    private val rules = mutableMapOf<CSSSelector, CSSRule>()
 
     /**
      * Used to track what the current rule is when nesting CSS rules (e.g. ```div { h1 {} }```).
      */
-    internal var currentRule: StyleRule? = null
+    internal var currentRule: CSSRule? = null
 
     val body by cssElement()
     val header by cssElement()
@@ -37,41 +33,41 @@ open class StyleSheet {
     fun cssClass() = CssClassFactory
     fun cssPseudoClass() = CssPseudoClassFactory
 
-    fun StyleSheetCSSStyleDeclaration.and(rule: StyleRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+    fun StyleSheetCSSStyleDeclaration.and(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
         val newRule = getOrPutRule(CSSSelector.Union(this.rule.selector, rule.selector)) {
-            StyleRule(this@StyleSheet, it)
+            CSSRule(this@StyleSheet, it)
         }
 
         newRule.declaration.invoke(block)
     }
 
-    fun StyleSheetCSSStyleDeclaration.sibling(rule: StyleRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+    fun StyleSheetCSSStyleDeclaration.sibling(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
         val newRule = getOrPutRule(CSSSelector.Sibling(this.rule.selector, rule.selector)) {
-            StyleRule(this@StyleSheet, it)
+            CSSRule(this@StyleSheet, it)
         }
 
         newRule.declaration.invoke(block)
     }
 
-    fun StyleSheetCSSStyleDeclaration.adjacentSibling(rule: StyleRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+    fun StyleSheetCSSStyleDeclaration.adjacentSibling(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
         val newRule = getOrPutRule(CSSSelector.AdjacentSibling(this.rule.selector, rule.selector)) {
-            StyleRule(this@StyleSheet, it)
+            CSSRule(this@StyleSheet, it)
         }
 
         newRule.declaration.invoke(block)
     }
 
-    fun StyleSheetCSSStyleDeclaration.child(rule: StyleRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+    fun StyleSheetCSSStyleDeclaration.child(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
         val newRule = getOrPutRule(CSSSelector.Child(this.rule.selector, rule.selector)) {
-            StyleRule(this@StyleSheet, it)
+            CSSRule(this@StyleSheet, it)
         }
 
         newRule.declaration.invoke(block)
     }
 
-    fun StyleSheetCSSStyleDeclaration.descendant(rule: StyleRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+    fun StyleSheetCSSStyleDeclaration.descendant(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
         val newRule = getOrPutRule(CSSSelector.Descendant(this.rule.selector, rule.selector)) {
-            StyleRule(this@StyleSheet, it)
+            CSSRule(this@StyleSheet, it)
         }
 
         newRule.declaration.invoke(block)
@@ -91,34 +87,31 @@ open class StyleSheet {
     }
 
     object CssElementFactory {
-        operator fun provideDelegate(thisRef: StyleSheet, property: KProperty<*>): StyleElementRule {
+        operator fun provideDelegate(thisRef: StyleSheet, property: KProperty<*>): CSSElementRule {
             return thisRef.getOrPutRule(CSSSelector.Element(property.name)) {
-                StyleElementRule(thisRef, it)
+                CSSElementRule(thisRef, it)
             }
         }
     }
 
     object CssClassFactory {
-        operator fun provideDelegate(thisRef: StyleSheet, property: KProperty<*>): StyleClassRule =
+        operator fun provideDelegate(thisRef: StyleSheet, property: KProperty<*>): CSSClassRule =
                 thisRef.getOrPutRule(CSSSelector.Class(property.name)) {
-                    StyleClassRule(thisRef, it)
+                    CSSClassRule(thisRef, it)
                 }
     }
 
     object CssPseudoClassFactory {
-        operator fun provideDelegate(thisRef: StyleSheet, property: KProperty<*>): StylePseudoClassRule =
+        operator fun provideDelegate(thisRef: StyleSheet, property: KProperty<*>): CSSPseudoClassRule =
                 thisRef.getOrPutRule(CSSSelector.PseudoClass(property.name)) {
-                    StylePseudoClassRule(thisRef, it)
+                    CSSPseudoClassRule(thisRef, it)
                 }
     }
 
     @Suppress("UNCHECKED_CAST")
-    internal fun <S : CSSSelector, R : StyleRule> getOrPutRule(selector: S, create: (S) -> R): R =
-            rules.getOrPut(selector) {
-                if (selector is CSSSelector.Class) {
-                    cssClasses[selector.uniqueName] = selector
-                }
-
-                create(selector)
-            } as R
+    internal fun <S : CSSSelector, R : CSSRule> getOrPutRule(
+            selector: S,
+            create: (S) -> R
+    ): R =
+            rules.getOrPut(selector) { create(selector) } as R
 }

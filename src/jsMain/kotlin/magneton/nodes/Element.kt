@@ -8,7 +8,7 @@ import org.w3c.dom.HTMLSpanElement as DomHTMLSpanElement
 import org.w3c.dom.HTMLImageElement as DomHTMLImageElement
 
 actual abstract class Element : Parent() {
-    abstract override val domNode: DomElement?
+    abstract override val domNode: DomElement
 
     private val _attributes: MutableMap<String, Any?> = mutableMapOf()
     actual val attributes: Map<String, Any?> = _attributes
@@ -27,7 +27,7 @@ actual abstract class Element : Parent() {
 
     private fun setAttribute(key: String, value: String) {
         if (value != attributes[key]) {
-            domNode?.setAttribute(key, value)
+            domNode.setAttribute(key, value)
             _attributes[key] = value
         }
 
@@ -36,7 +36,7 @@ actual abstract class Element : Parent() {
 
     @Suppress("UNCHECKED_CAST")
     actual open fun <T> removeAttribute(key: String): T? {
-        domNode?.removeAttribute(key)
+        domNode.removeAttribute(key)
         return _attributes.remove(key) as T?
     }
 }

@@ -18,7 +18,7 @@ package magneton
  *
  * Note: make sure to eventually call [clear] to avoid memory leaks.
  */
-internal expect class GlobalState<T>() {
+expect class GlobalState<T>() {
     /**
      * Retrieves the state object.
      */

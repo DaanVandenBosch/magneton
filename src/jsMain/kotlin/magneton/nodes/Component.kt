@@ -1,7 +1,6 @@
 package magneton.nodes
 
 import magneton.observable.ReactionDisposer
-import magneton.observable.reaction
 import org.w3c.dom.Node as DomNode
 
 // TODO: share code with JVM implementation.
@@ -26,19 +25,4 @@ actual abstract class Component : Parent() {
             parent.domAddChild(parent.children.indexOf(this), childDomNode)
         }
     }
-}
-
-fun renderToDom(domNode: DomNode, component: Component): ReactionDisposer {
-    val disposer = reaction {
-        NodeState.Global.set(NodeState())
-
-        try {
-            component.render()
-        } finally {
-            NodeState.Global.clear()
-        }
-    }
-    domNode.appendChild(component.domNode!!)
-    notifyDidMount(component)
-    return disposer
 }

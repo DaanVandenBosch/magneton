@@ -1,6 +1,6 @@
 package magneton
 
-internal actual class GlobalState<T> {
+actual class GlobalState<T> {
     private val state: ThreadLocal<T?> = ThreadLocal()
 
     actual fun get(): T? = state.get()

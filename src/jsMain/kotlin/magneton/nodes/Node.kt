@@ -1,10 +1,12 @@
 package magneton.nodes
 
+import magneton.Context
 import org.w3c.dom.get
 import kotlin.browser.document
 import org.w3c.dom.Node as DomNode
 
 actual abstract class Node {
+    internal actual var context: Context? = null
     internal actual var isMounted: Boolean = false
 
     abstract val domNode: DomNode?

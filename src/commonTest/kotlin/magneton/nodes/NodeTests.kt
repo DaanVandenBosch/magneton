@@ -1,6 +1,7 @@
 package magneton.nodes
 
 import magneton.observable.observable
+import magneton.render
 import kotlin.test.*
 
 class NodeTests {
@@ -68,23 +69,22 @@ class NodeTests {
     @Test
     fun elements_should_only_be_replaced_when_necessary() {
         var spanInMiddle by observable(true)
+        var txt by observable("text1")
 
         val cmp = object : Component() {
             override fun render() = div {
                 div { }
-                if (spanInMiddle) span { } else div { }
+                if (spanInMiddle) span { text(txt) } else div { text(txt) }
                 div { }
             }
         }
-        val handle = render(cmp)
+        render(cmp)
 
         val node1 = (cmp.children[0] as Parent).children[0]
         val node2 = (cmp.children[0] as Parent).children[1]
         val node3 = (cmp.children[0] as Parent).children[2]
 
-        // Force rerender.
-        handle.dispose()
-        render(cmp)
+        txt = "text2"
 
         assertSame(node1, (cmp.children[0] as Parent).children[0])
         assertSame(node2, (cmp.children[0] as Parent).children[1])

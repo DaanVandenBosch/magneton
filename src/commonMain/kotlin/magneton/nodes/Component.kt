@@ -32,6 +32,7 @@ fun <T : Component> Parent.component(
         }
 
         val cmp = createComponent()
+        cmp.context = context
 
         cmp.disposer = reaction {
             val prevState = NodeState.Global.set(NodeState())
@@ -74,15 +75,3 @@ inline fun <reified T : Component> Parent.component(
         noinline createComponent: () -> T
 ): T =
         component(createComponent, T::class)
-
-// TODO: is only used during tests
-fun render(component: Component): ReactionDisposer =
-        reaction {
-            NodeState.Global.set(NodeState())
-
-            try {
-                component.render()
-            } finally {
-                NodeState.Global.clear()
-            }
-        }

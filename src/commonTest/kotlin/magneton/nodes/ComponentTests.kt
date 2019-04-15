@@ -1,6 +1,7 @@
 package magneton.nodes
 
 import magneton.observable.observable
+import magneton.render
 import kotlin.test.Test
 import kotlin.test.assertNotSame
 import kotlin.test.assertSame
@@ -75,14 +76,14 @@ class ComponentTests {
                 else component(::Inner2Component)
             }
         }
-        val handle = render(cmp)
+        val app = render(cmp)
 
         val innerCmp = (cmp.children[0] as Parent).children[0]
         assertTrue(innerCmp is Inner1Component)
 
         // Force rerender.
-        handle.dispose()
-        render(cmp)
+        app.stop()
+        app.start()
 
         assertSame(innerCmp, (cmp.children[0] as Parent).children[0])
 

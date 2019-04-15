@@ -1,11 +1,17 @@
 package magneton.nodes
 
+import magneton.Context
+
 @DslMarker
 annotation class NodeDslMarker
 
 @NodeDslMarker
 expect abstract class Node() {
-    // Note: this property will be set to false before the node is actually unmounted but after [willUnmount] is called.
+    internal var context: Context?
+
+    /**
+     * Note: this property will be set to false before the node is actually unmounted but after [willUnmount] is called.
+     */
     internal var isMounted: Boolean
 
     /**
@@ -44,6 +50,7 @@ fun Parent.text(data: String): Text {
         }
 
         node = Text(data)
+        node.context = context
         addChild(index, node)
     } else {
         node as Text

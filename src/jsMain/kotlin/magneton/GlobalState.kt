@@ -1,6 +1,6 @@
 package magneton
 
-internal actual class GlobalState<T> {
+actual class GlobalState<T> {
     private var state: T? = null
 
     actual fun get(): T? = state

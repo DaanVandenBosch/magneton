@@ -1,6 +1,9 @@
 package magneton.nodes
 
+import magneton.Context
+
 actual abstract class Node {
+    internal actual var context: Context? = null
     internal actual var isMounted: Boolean = false
 
     actual open fun didMount() {}

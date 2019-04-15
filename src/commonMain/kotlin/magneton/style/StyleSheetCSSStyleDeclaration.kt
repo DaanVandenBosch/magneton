@@ -1,6 +1,6 @@
 package magneton.style
 
-class StyleSheetCSSStyleDeclaration(val rule: StyleRule) : CSSStyleDeclaration() {
+class StyleSheetCSSStyleDeclaration(val rule: CSSRule) : CSSStyleDeclaration() {
     operator fun invoke(block: StyleSheetCSSStyleDeclaration.() -> Unit) {
         try {
             doUpdateCss = false

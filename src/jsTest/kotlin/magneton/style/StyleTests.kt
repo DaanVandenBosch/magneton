@@ -1,6 +1,7 @@
 package magneton.style
 
 import magneton.nodes.*
+import magneton.render
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -2,8 +2,8 @@ package magneton.style
 
 import kotlin.reflect.KProperty
 
-open class StyleRule(
-        private val styleSheet: StyleSheet,
+open class CSSRule(
+        internal val styleSheet: StyleSheet,
         open val selector: CSSSelector
 ) {
     val declaration by lazy { StyleSheetCSSStyleDeclaration(this) }
@@ -15,7 +15,7 @@ open class StyleRule(
         } else {
             styleSheet.getOrPutRule(
                     CSSSelector.Descendant(prevRule.selector, selector)
-            ) { StyleRule(styleSheet, it) }
+            ) { CSSRule(styleSheet, it) }
         }
         styleSheet.currentRule = newRule
         newRule.declaration.invoke(block)
@@ -29,32 +29,32 @@ open class StyleRule(
     }
 }
 
-class StyleElementRule(
+class CSSElementRule(
         styleSheet: StyleSheet,
         override val selector: CSSSelector.Element
-) : StyleRule(styleSheet, selector) {
+) : CSSRule(styleSheet, selector) {
     /**
-     * Dummy operator to get [StyleRule] factories in [StyleSheet] to work.
+     * Dummy operator to get [CSSRule] factories in [StyleSheet] to work.
      */
-    operator fun getValue(thisRef: StyleSheet, property: KProperty<*>): StyleElementRule = this
+    operator fun getValue(thisRef: StyleSheet, property: KProperty<*>): CSSElementRule = this
 }
 
-class StyleClassRule(
+class CSSClassRule(
         styleSheet: StyleSheet,
         override val selector: CSSSelector.Class
-) : StyleRule(styleSheet, selector) {
+) : CSSRule(styleSheet, selector) {
     /**
-     * Dummy operator to get [StyleRule] factories in [StyleSheet] to work.
+     * Dummy operator to get [CSSRule] factories in [StyleSheet] to work.
      */
-    operator fun getValue(thisRef: StyleSheet, property: KProperty<*>): StyleClassRule = this
+    operator fun getValue(thisRef: StyleSheet, property: KProperty<*>): CSSClassRule = this
 }
 
-class StylePseudoClassRule(
+class CSSPseudoClassRule(
         styleSheet: StyleSheet,
         override val selector: CSSSelector.PseudoClass
-) : StyleRule(styleSheet, selector) {
+) : CSSRule(styleSheet, selector) {
     /**
-     * Dummy operator to get [StyleRule] factories in [StyleSheet] to work.
+     * Dummy operator to get [CSSRule] factories in [StyleSheet] to work.
      */
-    operator fun getValue(thisRef: StyleSheet, property: KProperty<*>): StylePseudoClassRule = this
+    operator fun getValue(thisRef: StyleSheet, property: KProperty<*>): CSSPseudoClassRule = this
 }

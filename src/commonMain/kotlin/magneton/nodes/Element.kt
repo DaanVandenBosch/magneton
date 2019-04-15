@@ -1,5 +1,6 @@
 package magneton.nodes
 
+import magneton.style.CSSClassRule
 import magneton.style.InlineCSSStyleDeclaration
 import kotlin.reflect.KClass
 
@@ -23,9 +24,10 @@ expect class HTMLSpanElement() : HTMLElement
 expect class HTMLImageElement() : HTMLElement
 
 fun <T : Element> Parent.addElement(
-        create: () -> T,
         elementClass: KClass<T>,
-        block: T.() -> Unit
+        create: () -> T,
+        cssClass: CSSClassRule? = null,
+        block: (T.() -> Unit)? = null
 ): T {
     val prevState = NodeState.Global.set(NodeState())!!
     val index = prevState.childIndex++
@@ -39,6 +41,7 @@ fun <T : Element> Parent.addElement(
         }
 
         node = create()
+        node.context = context
         addChild(index, node)
 
         if (isMounted) {
@@ -50,7 +53,12 @@ fun <T : Element> Parent.addElement(
     node as T
 
     try {
-        node.block()
+        cssClass?.let {
+            context?.styleSheetRegistry?.register(it.styleSheet)
+            node.className = it.selector.uniqueName
+        }
+
+        block?.invoke(node)
 
         // Clean up implicitly removed attributes and child nodes.
         val state = NodeState.Global.get()!!
@@ -77,27 +85,34 @@ fun <T : Element> Parent.addElement(
 
 inline fun <reified T : Element> Parent.addElement(
         noinline create: () -> T,
-        noinline block: T.() -> Unit
+        cssClass: CSSClassRule? = null,
+        noinline block: (T.() -> Unit)? = null
 ): T =
-        addElement(create, T::class, block)
+        addElement(T::class, create, cssClass, block)
 
-fun Parent.div(block: HTMLDivElement.() -> Unit): HTMLDivElement =
-        addElement(::HTMLDivElement, block)
+fun Parent.div(cssClass: CSSClassRule? = null, block: (HTMLDivElement.() -> Unit)? = null): HTMLDivElement =
+        addElement(::HTMLDivElement, cssClass, block)
 
-fun Parent.span(block: HTMLSpanElement.() -> Unit): HTMLSpanElement =
-        addElement(::HTMLSpanElement, block)
+fun Parent.span(cssClass: CSSClassRule? = null, block: (HTMLSpanElement.() -> Unit)? = null): HTMLSpanElement =
+        addElement(::HTMLSpanElement, cssClass, block)
 
-fun Parent.header(block: HTMLElement.() -> Unit): HTMLElement =
-        addElement({ HTMLElement("header") }, block)
+fun Parent.header(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement({ HTMLElement("header") }, cssClass, block)
 
-fun Parent.footer(block: HTMLElement.() -> Unit): HTMLElement =
-        addElement({ HTMLElement("footer") }, block)
+fun Parent.footer(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement({ HTMLElement("footer") }, cssClass, block)
 
-fun Parent.main(block: HTMLElement.() -> Unit): HTMLElement =
-        addElement({ HTMLElement("main") }, block)
+fun Parent.main(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement({ HTMLElement("main") }, cssClass, block)
 
-fun Parent.img(block: HTMLImageElement.() -> Unit): HTMLImageElement =
-        addElement(::HTMLImageElement, block)
+fun Parent.img(cssClass: CSSClassRule? = null, block: (HTMLImageElement.() -> Unit)? = null): HTMLImageElement =
+        addElement(::HTMLImageElement, cssClass, block)
+
+var Element.className: String
+    get() = getAttribute("class") ?: ""
+    set(value) {
+        setAttribute("class", value)
+    }
 
 var HTMLElement.hidden: Boolean
     get() = getAttribute("hidden") ?: false

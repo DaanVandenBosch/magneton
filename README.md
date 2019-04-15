@@ -16,12 +16,12 @@ object TodoStore {
 }
 
 // ...and a view.
-class AppComponent : Component {
+class AppComponent : Component() {
     override fun render() = div {
         table {
-            TodoStore.todos.forEachIndexed { (i, todo) ->
+            TodoStore.todos.forEachIndexed { i, todo ->
                 tr {
-                    td { text(i) }
+                    td { text(i.toString()) }
                     td { text(todo.title) }
                 }
             }
@@ -35,9 +35,9 @@ fun main() {
 
     // Add some to do's, the view will automatically be updated.
     TodoStore.todos = listOf(
-        TodoModel("Buy milk")
-        TodoModel("Feed dog")
-        TodoModel("Contribute to Magneton")
+            TodoModel("Buy milk"),
+            TodoModel("Feed dog"),
+            TodoModel("Contribute to Magneton")
     )
 }
 ```

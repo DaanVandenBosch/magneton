@@ -110,6 +110,24 @@ fun Parent.footer(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit
 fun Parent.main(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
         addElement(::HTMLElement, "main", cssClass, block)
 
+fun Parent.h1(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "h1", cssClass, block)
+
+fun Parent.h2(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "h2", cssClass, block)
+
+fun Parent.h3(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "h3", cssClass, block)
+
+fun Parent.h4(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "h4", cssClass, block)
+
+fun Parent.h5(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "h5", cssClass, block)
+
+fun Parent.h6(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "h6", cssClass, block)
+
 fun Parent.img(cssClass: CSSClassRule? = null, block: (HTMLImageElement.() -> Unit)? = null): HTMLImageElement =
         addElement(::HTMLImageElement, "img", cssClass, block)
 

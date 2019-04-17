@@ -24,4 +24,6 @@ actual abstract class Element : Parent() {
 
 actual open class HTMLElement actual constructor(actual val tagName: String) : Element()
 
+actual class HTMLAnchorElement actual constructor(tagName: String) : HTMLElement(tagName)
 actual class HTMLImageElement actual constructor(tagName: String) : HTMLElement(tagName)
+actual class HTMLInputElement actual constructor(tagName: String) : HTMLElement(tagName)

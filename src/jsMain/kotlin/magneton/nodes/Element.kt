@@ -2,9 +2,11 @@ package magneton.nodes
 
 import kotlin.browser.document
 import org.w3c.dom.Element as DomElement
+import org.w3c.dom.HTMLAnchorElement as DomHTMLAnchorElement
 import org.w3c.dom.HTMLDivElement as DomHTMLDivElement
 import org.w3c.dom.HTMLElement as DomHTMLElement
 import org.w3c.dom.HTMLImageElement as DomHTMLImageElement
+import org.w3c.dom.HTMLInputElement as DomHTMLInputElement
 import org.w3c.dom.HTMLSpanElement as DomHTMLSpanElement
 
 actual abstract class Element : Parent() {
@@ -45,6 +47,14 @@ actual open class HTMLElement actual constructor(actual val tagName: String) : E
     override val domNode = document.createElement(tagName) as DomHTMLElement
 }
 
+actual class HTMLAnchorElement actual constructor(tagName: String) : HTMLElement(tagName) {
+    override val domNode = super.domNode as DomHTMLAnchorElement
+}
+
 actual class HTMLImageElement actual constructor(tagName: String) : HTMLElement(tagName) {
     override val domNode = super.domNode as DomHTMLImageElement
+}
+
+actual class HTMLInputElement actual constructor(tagName: String) : HTMLElement(tagName) {
+    override val domNode = super.domNode as DomHTMLInputElement
 }

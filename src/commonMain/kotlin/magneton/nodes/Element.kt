@@ -21,7 +21,9 @@ expect open class HTMLElement internal constructor(tagName: String) : Element {
     val tagName: String
 }
 
+expect class HTMLAnchorElement internal constructor(tagName: String) : HTMLElement
 expect class HTMLImageElement internal constructor(tagName: String) : HTMLElement
+expect class HTMLInputElement internal constructor(tagName: String) : HTMLElement
 
 fun <T : Element> Parent.addElement(
         elementClass: KClass<T>,
@@ -110,6 +112,18 @@ fun Parent.footer(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit
 fun Parent.main(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
         addElement(::HTMLElement, "main", cssClass, block)
 
+fun Parent.section(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "section", cssClass, block)
+
+fun Parent.a(cssClass: CSSClassRule? = null, block: (HTMLAnchorElement.() -> Unit)? = null): HTMLAnchorElement =
+        addElement(::HTMLAnchorElement, "a", cssClass, block)
+
+fun Parent.strong(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "strong", cssClass, block)
+
+fun Parent.em(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "em", cssClass, block)
+
 fun Parent.h1(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
         addElement(::HTMLElement, "h1", cssClass, block)
 
@@ -152,6 +166,12 @@ fun Parent.td(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? =
 fun Parent.th(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
         addElement(::HTMLElement, "th", cssClass, block)
 
+fun Parent.input(cssClass: CSSClassRule? = null, block: (HTMLInputElement.() -> Unit)? = null): HTMLInputElement =
+        addElement(::HTMLInputElement, "input", cssClass, block)
+
+fun Parent.label(cssClass: CSSClassRule? = null, block: (HTMLElement.() -> Unit)? = null): HTMLElement =
+        addElement(::HTMLElement, "label", cssClass, block)
+
 var Element.className: String
     get() = getAttribute("class") ?: ""
     set(value) {
@@ -185,6 +205,13 @@ fun HTMLElement.style(block: InlineCSSStyleDeclaration.() -> Unit) {
     setAttribute("style", decl)
 }
 
+var HTMLAnchorElement.href: String?
+    get() = getAttribute("href")
+    set(value) {
+        if (value != null) setAttribute("href", value)
+        else removeAttribute<Any>("href")
+    }
+
 var HTMLImageElement.src: String?
     get() = getAttribute("src")
     set(value) {
@@ -204,4 +231,18 @@ var HTMLImageElement.height: Int?
     set(value) {
         if (value != null) setAttribute("height", value)
         else removeAttribute<Any>("height")
+    }
+
+var HTMLInputElement.checked: Boolean
+    get() = getAttribute("checked") ?: false
+    set(value) {
+        if (value) setAttribute("checked")
+        else removeAttribute<Any>("checked")
+    }
+
+var HTMLInputElement.type: String?
+    get() = getAttribute("type")
+    set(value) {
+        if (value != null) setAttribute("type", value)
+        else removeAttribute<Any>("type")
     }

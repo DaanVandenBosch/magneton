@@ -27,7 +27,7 @@ actual abstract class Element : Parent() {
         setAttribute(key, value?.toStringValue() ?: "")
     }
 
-    private fun setAttribute(key: String, value: String) {
+    protected open fun setAttribute(key: String, value: String) {
         if (value != attributes[key]) {
             domNode.setAttribute(key, value)
             _attributes[key] = value
@@ -57,4 +57,20 @@ actual class HTMLImageElement actual constructor(tagName: String) : HTMLElement(
 
 actual class HTMLInputElement actual constructor(tagName: String) : HTMLElement(tagName) {
     override val domNode = super.domNode as DomHTMLInputElement
+
+    override fun setAttribute(key: String, value: String) {
+        if (key == "checked") {
+            domNode.asDynamic().checked = true
+        }
+
+        super.setAttribute(key, value)
+    }
+
+    override fun <T> removeAttribute(key: String): T? {
+        if (key == "checked") {
+            domNode.asDynamic().checked = false
+        }
+
+        return super.removeAttribute(key)
+    }
 }

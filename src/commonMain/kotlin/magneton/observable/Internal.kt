@@ -76,7 +76,12 @@ internal fun <T> runInAction(block: () -> T): T {
 
         // Update observers of changed observables.
         newState.changedObservables.forEach { observable ->
-            observable.derivations.forEach(::updateDerivation)
+            // Make a copy of derivations (using toTypedArray) because it might change when one of the derivations is updated.
+            observable.derivations.toTypedArray().forEach { derivation ->
+                runInAction {
+                    updateDerivation(derivation)
+                }
+            }
         }
     }
 }

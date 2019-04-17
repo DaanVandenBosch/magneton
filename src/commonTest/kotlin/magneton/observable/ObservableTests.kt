@@ -82,7 +82,7 @@ class ObservableTests {
     fun a_computed_value_should_update_when_its_dependencies_change() {
         var dep1: Int by ObservableValue(2)
         var dep2: Int by ObservableValue(3)
-        val product by ComputedValue { dep1 * dep2 }
+        val product: Int by ComputedValue { dep1 * dep2 }
         assertEquals(6, product)
 
         dep1 = 3
@@ -90,5 +90,24 @@ class ObservableTests {
 
         dep2 = 4
         assertEquals(12, product)
+    }
+
+    @Test
+    fun a_reaction_should_update_when_its_computable_dependency_changes() {
+        var value by ObservableValue("a")
+        var extracted = ""
+        val valueUpper by ComputedValue { value.toUpperCase() }
+
+        reaction {
+            extracted = valueUpper
+        }
+
+        assertEquals("A", valueUpper)
+        assertEquals("A", extracted)
+
+        value = "b"
+
+        assertEquals("B", valueUpper)
+        assertEquals("B", extracted)
     }
 }

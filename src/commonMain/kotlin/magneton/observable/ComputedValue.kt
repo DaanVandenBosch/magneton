@@ -14,7 +14,7 @@ class ComputedValue<T>(
     override fun update() {
         val value = block()
 
-        if (value != this.value) {
+        if (!initialized || value != this.value) {
             this.value = value
             reportChanged()
         }
@@ -25,6 +25,7 @@ class ComputedValue<T>(
 
         if (!initialized) {
             updateDerivation(this)
+            initialized = true
         }
 
         @Suppress("UNCHECKED_CAST")

@@ -178,6 +178,14 @@ var Element.className: String
         setAttribute("class", value)
     }
 
+fun Element.classList(classes: List<CSSClassRule>) {
+    className = classes.joinToString(" ") { it.selector.uniqueName }
+}
+
+fun Element.classList(vararg classes: CSSClassRule) {
+    className = classes.joinToString(" ") { it.selector.uniqueName }
+}
+
 var HTMLElement.title: String?
     get() = getAttribute("title")
     set(value) {

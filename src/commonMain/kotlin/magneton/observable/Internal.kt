@@ -74,14 +74,15 @@ internal fun <T> runInAction(block: () -> T): T {
     } finally {
         ActionState.Global.restore(prevState)
 
-        // Update observers of changed observables.
-        newState.changedObservables.forEach { observable ->
-            // Make a copy of derivations (using toTypedArray) because it might change when one of the derivations is updated.
-            observable.derivations.toTypedArray().forEach { derivation ->
-                runInAction {
-                    updateDerivation(derivation)
+        // Update derivations of changed observables.
+        // Make a copy of all derivations lists (using flatMap) because they might change when one of the derivations is updated.
+        // Flat map to a set to avoid updating the same derivation twice.
+        newState.changedObservables
+                .flatMapTo(mutableSetOf()) { it.derivations }
+                .forEach { derivation ->
+                    runInAction {
+                        updateDerivation(derivation)
+                    }
                 }
-            }
-        }
     }
 }

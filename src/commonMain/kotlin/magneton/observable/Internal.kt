@@ -3,27 +3,34 @@ package magneton.observable
 import magneton.GlobalState
 
 private class ActionState {
-    val changedObservables: MutableSet<Observable> = mutableSetOf()
+    val runId = nextRunId++
+    val changedObservables: MutableSet<Observable<*>> = mutableSetOf()
 
     companion object {
+        var nextRunId = 0
         val Global = GlobalState<ActionState>()
     }
 }
 
 private class DerivationState {
-    val observedObservables: MutableSet<Observable> = mutableSetOf()
+    val observedObservables: MutableSet<Observable<*>> = mutableSetOf()
 
     companion object {
         val Global = GlobalState<DerivationState>()
     }
 }
 
-internal fun Observable.reportObserved() {
+internal fun Observable<*>.reportObserved() {
     DerivationState.Global.get()?.observedObservables?.add(this)
 }
 
-internal fun Observable.reportChanged() {
-    ActionState.Global.get()?.changedObservables?.add(this)
+internal fun Observable<*>.reportChanged() {
+    ActionState.Global.get()?.let { state ->
+        if (state.runId != lastActionRunId) {
+            state.changedObservables.add(this)
+            lastActionRunId = state.runId
+        }
+    }
 }
 
 internal fun updateDerivation(derivation: Derivation) {
@@ -69,20 +76,44 @@ internal fun <T> runInAction(block: () -> T): T {
     val newState = ActionState()
     val prevState = ActionState.Global.set(newState)
 
-    try {
-        return block()
+    val retVal = try {
+        block()
     } finally {
         ActionState.Global.restore(prevState)
+    }
 
-        // Update derivations of changed observables.
-        // Make a copy of all derivations lists (using flatMap) because they might change when one of the derivations is updated.
-        // Flat map to a set to avoid updating the same derivation twice.
-        newState.changedObservables
-                .flatMapTo(mutableSetOf()) { it.derivations }
-                .forEach { derivation ->
-                    runInAction {
+    // Update derivations of changed observables.
+    if (newState.changedObservables.isNotEmpty()) {
+        runInAction {
+            val runId = ActionState.Global.get()!!.runId
+
+            newState.changedObservables.forEach { observable ->
+                // We can't use an iterator to loop over observable.derivations because the
+                // derivation we're updating inside the loop might remove itself from
+                // observable.derivations and thus cause a ConcurrentModificationException.
+                var size = observable.derivations.size
+                var i = 0
+
+                while (i < size) {
+                    val derivation = observable.derivations[i]
+
+                    if (derivation.lastActionRunId != runId) {
                         updateDerivation(derivation)
+                        derivation.lastActionRunId = runId
+
+                        // Check whether the derivation no longer depends on observable.
+                        if (observable.derivations.size < size) {
+                            size = observable.derivations.size
+                        } else {
+                            i++
+                        }
+                    } else {
+                        i++
                     }
                 }
+            }
+        }
     }
+
+    return retVal
 }

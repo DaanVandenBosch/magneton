@@ -1,5 +1,7 @@
 package magneton.observable
 
-interface Observable {
+interface Observable<T> : ActionAware {
     val derivations: MutableList<Derivation>
+
+    fun get(): T
 }

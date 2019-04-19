@@ -4,15 +4,16 @@ import kotlin.reflect.KProperty
 
 class ObservableValue<T>(
         private var value: T
-) : Observable {
+) : Observable<T> {
     override val derivations: MutableList<Derivation> = mutableListOf()
+    override var lastActionRunId: Int = -1
 
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
+    override fun get(): T {
         reportObserved()
         return value
     }
 
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+    fun set(value: T) {
         reportObserved()
 
         if (value != this.value) {
@@ -22,5 +23,12 @@ class ObservableValue<T>(
                 reportChanged()
             }
         }
+    }
+
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T =
+            get()
+
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        set(value)
     }
 }

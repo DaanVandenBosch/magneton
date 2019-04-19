@@ -1,10 +1,10 @@
 package magneton.observable
 
-interface Derivation {
+interface Derivation : ActionAware {
     /**
      * [Observable] objects being observed by this derivation.
      */
-    val dependencies: MutableList<Observable>
+    val dependencies: MutableList<Observable<*>>
 
     fun update()
 }

@@ -5,7 +5,8 @@ interface ReactionDisposer {
 }
 
 class Reaction(private val f: () -> Unit) : ReactionDisposer, Derivation {
-    override val dependencies: MutableList<Observable> = mutableListOf()
+    override val dependencies: MutableList<Observable<*>> = mutableListOf()
+    override var lastActionRunId: Int = -1
 
     init {
         updateDerivation(this)

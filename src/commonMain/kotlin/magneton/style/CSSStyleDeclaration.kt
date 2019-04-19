@@ -12,6 +12,8 @@ abstract class CSSStyleDeclaration {
     var zIndex: Int? by prop("z-index")
     var fontFamily: List<FontFamily>? by prop("font-family")
     var fontSize: Length? by prop("font-size")
+    var fontWeight: Int? by prop("font-weight")
+    var letterSpacing: Length? by prop("letter-spacing")
     var color: Color? by prop("color")
     var textAlign: TextAlign? by prop("text-align")
     var backgroundColor: Color? by prop("background-color")

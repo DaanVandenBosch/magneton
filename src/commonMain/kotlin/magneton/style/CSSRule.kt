@@ -9,17 +9,14 @@ open class CSSRule(
     val declaration by lazy { StyleSheetCSSStyleDeclaration(this) }
 
     operator fun invoke(block: StyleSheetCSSStyleDeclaration.() -> Unit) {
-        val prevRule = styleSheet.currentRule
-        val newRule = if (prevRule == null) {
+        val newRule = if (styleSheet.currentRule == null) {
             this
         } else {
             styleSheet.getOrPutRule(
-                    CSSSelector.Descendant(prevRule.selector, selector)
-            ) { CSSRule(styleSheet, it) }
+                    CSSSelector.Descendant(styleSheet.currentRule!!.selector, selector)
+            )
         }
-        styleSheet.currentRule = newRule
-        newRule.declaration.invoke(block)
-        styleSheet.currentRule = prevRule
+        styleSheet.invokeRuleDeclaration(newRule, block)
     }
 
     fun toCss(sb: StringBuilder) {

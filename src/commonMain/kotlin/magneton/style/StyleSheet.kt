@@ -34,43 +34,35 @@ open class StyleSheet {
     fun cssPseudoClass() = CssPseudoClassFactory
 
     fun StyleSheetCSSStyleDeclaration.and(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
-        val newRule = getOrPutRule(CSSSelector.Union(this.rule.selector, rule.selector)) {
-            CSSRule(this@StyleSheet, it)
-        }
-
-        newRule.declaration.invoke(block)
+        val newRule = getOrPutRule(CSSSelector.Intersection(this.rule.selector, rule.selector))
+        invokeRuleDeclaration(newRule, block)
     }
 
     fun StyleSheetCSSStyleDeclaration.sibling(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
-        val newRule = getOrPutRule(CSSSelector.Sibling(this.rule.selector, rule.selector)) {
-            CSSRule(this@StyleSheet, it)
-        }
-
-        newRule.declaration.invoke(block)
+        val newRule = getOrPutRule(CSSSelector.Sibling(this.rule.selector, rule.selector))
+        invokeRuleDeclaration(newRule, block)
     }
 
     fun StyleSheetCSSStyleDeclaration.adjacentSibling(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
-        val newRule = getOrPutRule(CSSSelector.AdjacentSibling(this.rule.selector, rule.selector)) {
-            CSSRule(this@StyleSheet, it)
-        }
-
-        newRule.declaration.invoke(block)
+        val newRule = getOrPutRule(CSSSelector.AdjacentSibling(this.rule.selector, rule.selector))
+        invokeRuleDeclaration(newRule, block)
     }
 
     fun StyleSheetCSSStyleDeclaration.child(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
-        val newRule = getOrPutRule(CSSSelector.Child(this.rule.selector, rule.selector)) {
-            CSSRule(this@StyleSheet, it)
-        }
-
-        newRule.declaration.invoke(block)
+        val newRule = getOrPutRule(CSSSelector.Child(this.rule.selector, rule.selector))
+        invokeRuleDeclaration(newRule, block)
     }
 
     fun StyleSheetCSSStyleDeclaration.descendant(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
-        val newRule = getOrPutRule(CSSSelector.Descendant(this.rule.selector, rule.selector)) {
-            CSSRule(this@StyleSheet, it)
-        }
+        val newRule = getOrPutRule(CSSSelector.Descendant(this.rule.selector, rule.selector))
+        invokeRuleDeclaration(newRule, block)
+    }
 
-        newRule.declaration.invoke(block)
+    internal fun invokeRuleDeclaration(newRule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+        val prevRule = currentRule
+        currentRule = newRule
+        currentRule!!.declaration.invoke(block)
+        currentRule = prevRule
     }
 
     fun toCss(): String {
@@ -114,4 +106,7 @@ open class StyleSheet {
             create: (S) -> R
     ): R =
             rules.getOrPut(selector) { create(selector) } as R
+
+    internal fun <S : CSSSelector> getOrPutRule(selector: S): CSSRule =
+            getOrPutRule(selector, { CSSRule(this@StyleSheet, it) })
 }

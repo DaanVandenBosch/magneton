@@ -19,7 +19,7 @@ sealed class CSSSelector {
         override val css = ":$name"
     }
 
-    class Union(val selector1: CSSSelector, val selector2: CSSSelector) : CSSSelector() {
+    class Intersection(val selector1: CSSSelector, val selector2: CSSSelector) : CSSSelector() {
         override val css = selector1.css + selector2.css
     }
 

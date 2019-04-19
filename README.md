@@ -49,7 +49,6 @@ Things that still need to be done in no particular order.
 - Finish MobX-inspired observables implementation
     - Observable collections
     - Optimize performance
-- Allow style definitions inside (or close to) component code (should still be rendered to CSS rules in a stylesheet to support pseudo classes and possibly combinators?)
 - Automatically generate all DOM manipulation code (see [https://github.com/JetBrains/kotlin/tree/master/libraries/tools/idl2k] for ideas)
 - Allow rendering to HTML on the JVM
 - Routing
@@ -58,5 +57,7 @@ Things that still need to be done in no particular order.
     - Quick start
     - Reference docs
     - Tutorials
+    - Optimization
+        - Don't let your render function depend on observables that often change but don't cause a change in what's rendered. E.g. a check whether an element in a huge list is the selected element to add a CSS class to it. On an element-by-element basis this rarely changes, so rerendering every element every time the selection changes is very slow. Do the check in a computed value and reference that in your render function.
 - Add application-wide node lifecycle hooks to facilitate extension
     - Implement rerendering as reaction to observable changes in terms of these hooks

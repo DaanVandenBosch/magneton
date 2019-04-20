@@ -71,19 +71,27 @@ class BackgroundPosition(horizontal: Coordinate, vertical: Coordinate) : StylePr
     override val css = "${horizontal.css} ${vertical.css}"
 }
 
-class Color private constructor(r: Int, g: Int, b: Int, a: Double) : StylePropertyType {
-    init {
-        require(r in 0..255) { "r should be between 0 and 255" }
-        require(g in 0..255) { "g should be between 0 and 255" }
-        require(b in 0..255) { "b should be between 0 and 255" }
-        require(a in 0.0..1.0) { "a should be between 0 and 1" }
-    }
-
-    override val css = "rgba($r, $g, $b, $a)"
-
+class Color private constructor(override val css: String) : StylePropertyType {
     companion object {
-        fun rgb(r: Int, g: Int, b: Int): Color = Color(r, g, b, 1.0)
-        fun rgba(r: Int, g: Int, b: Int, a: Double): Color = Color(r, g, b, a)
+        fun hsl(h: Int, s: Double, l: Double): Color = hsla(h, s, l, 1.0)
+
+        fun hsla(h: Int, s: Double, l: Double, a: Double): Color {
+            require(s in 0.0..100.0) { "s should be between 0 and 100" }
+            require(l in 0.0..100.0) { "l should be between 0 and 100" }
+            require(a in 0.0..1.0) { "a should be between 0 and 1" }
+            val hn = h % 360
+            return Color(if (a == 1.0) "hsl($hn, $s%, $l%)" else "hsla($hn, $s%, $l%, $a)")
+        }
+
+        fun rgb(r: Int, g: Int, b: Int): Color = rgba(r, g, b, 1.0)
+
+        fun rgba(r: Int, g: Int, b: Int, a: Double): Color {
+            require(r in 0..255) { "r should be between 0 and 255" }
+            require(g in 0..255) { "g should be between 0 and 255" }
+            require(b in 0..255) { "b should be between 0 and 255" }
+            require(a in 0.0..1.0) { "a should be between 0 and 1" }
+            return Color(if (a == 1.0) "rgb($r, $g, $b)" else "rgba($r, $g, $b, $a)")
+        }
     }
 }
 
@@ -131,4 +139,35 @@ enum class WhiteSpace(override val css: String) : StylePropertyType {
 
 enum class Overflow(override val css: String) : StylePropertyType {
     Visible("visible"), Hidden("hidden"), Clip("clip"), Scroll("scroll"), Auto("auto")
+}
+
+enum class TimeUnit(override val css: String) : StylePropertyType {
+    Seconds("s"), MilliSeconds("ms")
+}
+
+class Duration private constructor(override val css: String) : StylePropertyType {
+    constructor(number: Number, unit: TimeUnit) : this("$number${unit.css}")
+}
+
+class AnimationTimingFunction private constructor(override val css: String) : StylePropertyType {
+    companion object {
+        fun ease() = AnimationTimingFunction("ease")
+        fun easeOut() = AnimationTimingFunction("ease-out")
+        fun easeIn() = AnimationTimingFunction("ease-in")
+        fun faseInOut() = AnimationTimingFunction("ease-in-out")
+        fun linear() = AnimationTimingFunction("linear")
+        fun cubicBezier(x1: Double, y1: Double, x2: Double, y2: Double) = AnimationTimingFunction("cubic-bezier($x1, $y1, $x2, $y2)")
+    }
+}
+
+enum class AnimationFillMode(override val css: String) : StylePropertyType {
+    Forwards("forwards"), Backwards("backwards"), Both("both"), None("none")
+}
+
+enum class AnimationDirection(override val css: String) : StylePropertyType {
+    Normal("normal"), Reverse("reverse"), Alternate("alternate"), AlternateReverse("alternate-reverse")
+}
+
+enum class AnimationPlayState(override val css: String) : StylePropertyType {
+    Paused("paused"), Running("running")
 }

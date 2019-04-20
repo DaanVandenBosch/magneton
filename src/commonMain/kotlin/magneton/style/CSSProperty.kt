@@ -8,8 +8,7 @@ class CSSProperty<T>(
         var value: T?
 ) {
     @Suppress("UNCHECKED_CAST")
-    operator fun getValue(thisRef: CSSStyleDeclaration, property: KProperty<*>): T? =
-            thisRef.properties[name]?.value as T?
+    operator fun getValue(thisRef: CSSStyleDeclaration, property: KProperty<*>): T? = value
 
     operator fun setValue(thisRef: CSSStyleDeclaration, property: KProperty<*>, value: T?) {
         if (this.value != value) {

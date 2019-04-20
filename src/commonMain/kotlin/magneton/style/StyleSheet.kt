@@ -24,6 +24,7 @@ open class StyleSheet {
     val h5 by cssElement()
     val h6 by cssElement()
     val input by cssElement()
+    val path by cssElement()
 
     val hover by cssPseudoClass()
     val active by cssPseudoClass()
@@ -33,28 +34,68 @@ open class StyleSheet {
     fun cssClass() = CssClassFactory
     fun cssPseudoClass() = CssPseudoClassFactory
 
+    fun CSSRule.and(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+        this.selector.and(rule, block)
+    }
+
     fun StyleSheetCSSStyleDeclaration.and(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
-        val newRule = getOrPutRule(CSSSelector.Intersection(this.rule.selector, rule.selector))
+        this.rule.selector.and(rule, block)
+    }
+
+    fun CSSSelector.and(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+        val newRule = getOrPutRule(CSSSelector.Intersection(this, rule.selector))
         invokeRuleDeclaration(newRule, block)
+    }
+
+    fun CSSRule.sibling(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+        this.selector.sibling(rule, block)
     }
 
     fun StyleSheetCSSStyleDeclaration.sibling(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
-        val newRule = getOrPutRule(CSSSelector.Sibling(this.rule.selector, rule.selector))
+        this.rule.selector.sibling(rule, block)
+    }
+
+    fun CSSSelector.sibling(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+        val newRule = getOrPutRule(CSSSelector.Sibling(this, rule.selector))
         invokeRuleDeclaration(newRule, block)
+    }
+
+    fun CSSRule.adjacentSibling(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+        this.selector.adjacentSibling(rule, block)
     }
 
     fun StyleSheetCSSStyleDeclaration.adjacentSibling(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
-        val newRule = getOrPutRule(CSSSelector.AdjacentSibling(this.rule.selector, rule.selector))
+        this.rule.selector.adjacentSibling(rule, block)
+    }
+
+    fun CSSSelector.adjacentSibling(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+        val newRule = getOrPutRule(CSSSelector.AdjacentSibling(this, rule.selector))
         invokeRuleDeclaration(newRule, block)
+    }
+
+    fun CSSRule.child(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+        this.selector.child(rule, block)
     }
 
     fun StyleSheetCSSStyleDeclaration.child(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
-        val newRule = getOrPutRule(CSSSelector.Child(this.rule.selector, rule.selector))
+        this.rule.selector.child(rule, block)
+    }
+
+    fun CSSSelector.child(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+        val newRule = getOrPutRule(CSSSelector.Child(this, rule.selector))
         invokeRuleDeclaration(newRule, block)
     }
 
+    fun CSSRule.descendant(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+        this.selector.descendant(rule, block)
+    }
+
     fun StyleSheetCSSStyleDeclaration.descendant(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
-        val newRule = getOrPutRule(CSSSelector.Descendant(this.rule.selector, rule.selector))
+        this.rule.selector.descendant(rule, block)
+    }
+
+    fun CSSSelector.descendant(rule: CSSRule, block: StyleSheetCSSStyleDeclaration.() -> Unit) {
+        val newRule = getOrPutRule(CSSSelector.Descendant(this, rule.selector))
         invokeRuleDeclaration(newRule, block)
     }
 

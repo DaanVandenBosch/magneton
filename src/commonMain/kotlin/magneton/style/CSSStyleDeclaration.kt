@@ -47,6 +47,15 @@ abstract class CSSStyleDeclaration {
     var whiteSpace: WhiteSpace? by prop("white-space")
     var opacity: Double? by prop("opacity")
     var overflow: Overflow? by prop("overflow")
+    var animationName: String? by prop("animation-name")
+    var animationTimingFunction: AnimationTimingFunction? by prop("animation-timing-function")
+    var animationDuration: Duration? by prop("animation-duration")
+    var animationDelay: Duration? by prop("animation-delay")
+    var animationIterationCount: Int? by prop("animation-iteration-count")
+    var animationFillMode: AnimationFillMode? by prop("animation-fill-mode")
+    var animationDirection: AnimationDirection? by prop("animation-direction")
+    var animationPlayState: AnimationPlayState? by prop("animation-play-state")
+    var fill: Color? by prop("fill")
 
     fun padding(all: Length) {
         paddingTop = all

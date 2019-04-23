@@ -47,6 +47,8 @@ abstract class CSSStyleDeclaration {
     var whiteSpace: WhiteSpace? by prop("white-space")
     var opacity: Double? by prop("opacity")
     var overflow: Overflow? by prop("overflow")
+    var overflowX: Overflow? by prop("overflow-x")
+    var overflowY: Overflow? by prop("overflow-y")
     var animationName: String? by prop("animation-name")
     var animationTimingFunction: AnimationTimingFunction? by prop("animation-timing-function")
     var animationDuration: Duration? by prop("animation-duration")

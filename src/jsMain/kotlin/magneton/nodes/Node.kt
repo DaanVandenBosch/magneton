@@ -67,7 +67,9 @@ actual class Text actual constructor(data: String) : Node() {
 
     actual var data: String = data
         set(value) {
-            domNode.replaceData(0, field.length, value)
-            field = value
+            if (value != field) {
+                domNode.replaceData(0, field.length, value)
+                field = value
+            }
         }
 }

@@ -16,6 +16,7 @@ abstract class CSSStyleDeclaration {
     var letterSpacing: Length? by prop("letter-spacing")
     var color: Color? by prop("color")
     var textAlign: TextAlign? by prop("text-align")
+    var textDecorationLine: List<TextDecorationLine>? by prop("text-decoration-line")
     var backgroundColor: Color? by prop("background-color")
     var backgroundImage: Url? by prop("background-image")
     var backgroundPosition: BackgroundPosition? by prop("background-position")

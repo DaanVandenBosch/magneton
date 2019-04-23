@@ -6,8 +6,10 @@ import magneton.nodes.notifyDidMount
 import magneton.nodes.notifyWillUnmount
 import magneton.observable.ReactionDisposer
 import magneton.observable.reaction
+import magneton.routing.Router
+import magneton.routing.defaultRouter
 
-expect class Application(rootComponent: Component) {
+expect class Application(rootComponent: Component, router: Router) {
     val rootComponent: Component
     val started: Boolean
     val context: Context
@@ -52,7 +54,7 @@ internal fun Application.internalStop() {
 }
 
 fun render(component: Component): Application {
-    val app = Application(component)
+    val app = Application(component, defaultRouter)
     app.start()
     return app
 }

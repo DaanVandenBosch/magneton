@@ -10,7 +10,7 @@ expect abstract class Component() : Parent {
     /**
      * Called right before the component is first added to the node tree and after each change to one of its observable dependencies.
      */
-    abstract fun render(): Node
+    abstract fun render(): Node?
 }
 
 fun <T : Component> Parent.component(
@@ -37,10 +37,20 @@ fun <T : Component> Parent.component(
 
         cmp.disposer = reaction {
             val prevState = ctx.nodeState
-            ctx.nodeState = NodeState()
+            val state = NodeState()
+            ctx.nodeState = state
 
             try {
                 cmp.render()
+
+                // Clean up implicitly removed child nodes.
+                if (isMounted) {
+                    for (i in state.childIndex..cmp.children.lastIndex) {
+                        notifyWillUnmount(cmp.children[i])
+                    }
+                }
+
+                cmp.removeChildrenFrom(state.childIndex)
             } finally {
                 ctx.nodeState = prevState
             }

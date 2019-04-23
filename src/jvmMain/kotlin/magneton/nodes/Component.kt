@@ -5,7 +5,7 @@ import magneton.observable.ReactionDisposer
 actual abstract class Component : Parent() {
     internal actual var disposer: ReactionDisposer? = null
 
-    actual abstract fun render(): Node
+    actual abstract fun render(): Node?
 
     override fun addChild(index: Int, child: Node) {
         check(children.isEmpty()) {

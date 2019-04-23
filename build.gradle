@@ -26,11 +26,13 @@ kotlin {
     js {
         compilations.main {
             kotlinOptions {
+                // Must be defined or plugin won't add Karma tasks
                 outputFile = "$project.buildDir.path/classes/kotlin/js/main/${project.name}.js"
             }
         }
         compilations.test {
             kotlinOptions {
+                // Must be defined or plugin won't add Karma tasks
                 outputFile = "$project.buildDir.path/classes/kotlin/js/test/${project.name}.js"
             }
         }
@@ -61,9 +63,6 @@ kotlin {
                 // Kotlin
                 implementation kotlin('stdlib-jdk8')
                 implementation kotlin('reflect')
-
-                // Logging
-                implementation "org.slf4j:slf4j-api:1.7.25"
             }
         }
         jvmTest {

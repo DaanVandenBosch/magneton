@@ -9,7 +9,8 @@ enum class Position(override val css: String) : StylePropertyType {
 }
 
 enum class Display(override val css: String) : StylePropertyType {
-    None("none"), Block("block"), RunIn("run-in"), Flex("flex"), Inline("inline"), InlineBlock("inline-block"), InlineFlex("inline-flex")
+    None("none"), Block("block"), RunIn("run-in"), Flex("flex"), Inline("inline"),
+    InlineBlock("inline-block"), InlineFlex("inline-flex")
 }
 
 sealed class FontFamily : StylePropertyType {
@@ -96,7 +97,13 @@ class Color private constructor(override val css: String) : StylePropertyType {
 }
 
 enum class TextAlign(override val css: String) : StylePropertyType {
-    Left("left"), Right("right"), Center("center"), Justify("justify"), JustifyAll("justify-all"), Start("start"), End("end"), MatchParent("match-parent")
+    Left("left"), Right("right"), Center("center"), Justify("justify"), JustifyAll("justify-all"),
+    Start("start"), End("end"), MatchParent("match-parent")
+}
+
+enum class TextDecorationLine(override val css: String) : StylePropertyType {
+    None("none"), Underline("underline"), Overline("overline"), LineThrough("line-through"),
+    Blink("blink")
 }
 
 class Url(url: String) : StylePropertyType {
@@ -124,7 +131,11 @@ enum class UserSelect(override val css: String) : StylePropertyType {
 }
 
 enum class Cursor(override val css: String) : StylePropertyType {
-    Pointer("pointer"), Auto("auto"), Default("default"), None("none"), Help("help"), Progress("progress"), Wait("wait"), ContextMenu("context-menu"), Cell("cell"), Crosshair("crosshair"), Text("text"), VerticalText("vertical-text"), Alias("alias"), Copy("copy"), Move("move"), NoDrop("no-drop"), NotAllowed("not-allowed"), Grab("grab"), Grabbing("grabbing")
+    Pointer("pointer"), Auto("auto"), Default("default"), None("none"), Help("help"),
+    Progress("progress"), Wait("wait"), ContextMenu("context-menu"), Cell("cell"),
+    Crosshair("crosshair"), Text("text"), VerticalText("vertical-text"), Alias("alias"),
+    Copy("copy"), Move("move"), NoDrop("no-drop"), NotAllowed("not-allowed"), Grab("grab"),
+    Grabbing("grabbing")
 }
 
 class Transform private constructor(override val css: String) : StylePropertyType {
@@ -156,7 +167,8 @@ class AnimationTimingFunction private constructor(override val css: String) : St
         fun easeIn() = AnimationTimingFunction("ease-in")
         fun faseInOut() = AnimationTimingFunction("ease-in-out")
         fun linear() = AnimationTimingFunction("linear")
-        fun cubicBezier(x1: Double, y1: Double, x2: Double, y2: Double) = AnimationTimingFunction("cubic-bezier($x1, $y1, $x2, $y2)")
+        fun cubicBezier(x1: Double, y1: Double, x2: Double, y2: Double) =
+                AnimationTimingFunction("cubic-bezier($x1, $y1, $x2, $y2)")
     }
 }
 
@@ -165,7 +177,8 @@ enum class AnimationFillMode(override val css: String) : StylePropertyType {
 }
 
 enum class AnimationDirection(override val css: String) : StylePropertyType {
-    Normal("normal"), Reverse("reverse"), Alternate("alternate"), AlternateReverse("alternate-reverse")
+    Normal("normal"), Reverse("reverse"), Alternate("alternate"),
+    AlternateReverse("alternate-reverse")
 }
 
 enum class AnimationPlayState(override val css: String) : StylePropertyType {

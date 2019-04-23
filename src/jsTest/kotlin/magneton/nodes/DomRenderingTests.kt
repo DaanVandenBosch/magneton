@@ -1,15 +1,13 @@
 package magneton.nodes
 
+import magneton.observable.observable
 import magneton.render
 import magneton.renderToDom
 import magneton.style.StyleSheet
 import magneton.style.px
 import org.w3c.dom.get
 import kotlin.browser.document
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class DomRenderingTests {
     @Test
@@ -64,6 +62,47 @@ class DomRenderingTests {
         assertTrue(styleContent.contains(styles.inner.selector.css))
         assertEquals(1, doc.querySelectorAll(styles.outer.selector.css).length)
         assertEquals(1, doc.querySelectorAll(styles.inner.selector.css).length)
+    }
+
+    @Test
+    fun components_can_render_nothing() {
+        val cmp = object : Component() {
+            override fun render(): Node? = null
+        }
+        render(cmp)
+        val domNode = cmp.domNode
+
+        assertNull(domNode)
+    }
+
+    @Test
+    fun components_can_render_nothing_then_something_then_nothing() {
+        var renderNode by observable(false)
+
+        class Inner : Component() {
+            override fun render(): Node? = if (renderNode) {
+                span()
+            } else {
+                null
+            }
+        }
+
+        val cmp = object : Component() {
+            override fun render() = div {
+                component(::Inner)
+            }
+        }
+        val doc = document.createDocumentFragment()
+        renderToDom(doc, cmp)
+
+        assertNull(doc.firstChild!!.firstChild)
+
+        renderNode = true
+        assertNotNull(doc.firstChild!!.firstChild)
+        assertEquals("SPAN", doc.firstChild!!.firstChild!!.nodeName)
+
+        renderNode = false
+        assertNull(doc.firstChild!!.firstChild)
     }
 
     private class TestComponent : Component() {

@@ -30,9 +30,9 @@ actual abstract class Parent : Node() {
     internal actual open fun addChild(index: Int, child: Node) {
         if (child.parent != null) {
             child.parent!!._children.remove(child)
-            child.internalParent = this
         }
 
+        child.internalParent = this
         _children.add(index, child)
 
         child.domNode?.let { domAddChild(index, it) }
@@ -48,17 +48,15 @@ actual abstract class Parent : Node() {
         val removed = _children.removeAt(index)
         removed.internalParent = null
 
-        removed.domNode?.let(::domRemoveChild)
+        removed.domNode?.let { domNode ->
+            domNode.parentNode?.removeChild(domNode)
+        }
     }
 
     internal actual open fun removeChildrenFrom(index: Int) {
         for (i in index..children.lastIndex) {
             removeChildAt(index)
         }
-    }
-
-    internal open fun domRemoveChild(childDomNode: DomNode) {
-        domNode?.removeChild(childDomNode)
     }
 }
 

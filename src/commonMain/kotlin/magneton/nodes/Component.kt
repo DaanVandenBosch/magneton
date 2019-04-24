@@ -4,8 +4,12 @@ import magneton.observable.ReactionDisposer
 import magneton.observable.reaction
 import kotlin.reflect.KClass
 
+internal val componentNodeType: NodeType = stringToNodeType("magneton.nodes.Component")
+
 expect abstract class Component() : Parent {
     internal var disposer: ReactionDisposer?
+
+    override val nodeType: NodeType
 
     /**
      * Called right before the component is first added to the node tree and after each change to one of its observable dependencies.

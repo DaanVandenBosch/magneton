@@ -11,6 +11,8 @@ actual abstract class Node {
 
     abstract val domNode: DomNode?
 
+    actual abstract val nodeType: NodeType
+
     internal var internalParent: Parent? = null
     val parent: Parent? get() = internalParent
 
@@ -62,6 +64,8 @@ actual abstract class Parent : Node() {
 
 actual class Text actual constructor(data: String) : Node() {
     override val domNode = document.createTextNode(data)
+
+    override val nodeType: NodeType = textNodeType
 
     actual var data: String = data
         set(value) {

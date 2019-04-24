@@ -7,6 +7,8 @@ import org.w3c.dom.Node as DomNode
 actual abstract class Component : Parent() {
     override val domNode: DomNode? get() = children.firstOrNull()?.domNode
 
+    actual override val nodeType: NodeType = componentNodeType
+
     internal actual var disposer: ReactionDisposer? = null
 
     actual abstract fun render(): Node?

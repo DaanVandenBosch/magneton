@@ -15,6 +15,12 @@ expect abstract class Node() {
     internal var isMounted: Boolean
 
     /**
+     * This is a performance improvement over using KClasses to compare nodes. Looking up an
+     * objects KClass is very slow in JS.
+     */
+    abstract val nodeType: NodeType
+
+    /**
      * Called after the node is first rendered and added to the DOM.
      */
     open fun didMount()
@@ -34,6 +40,8 @@ expect abstract class Parent() : Node {
     internal open fun removeChildAt(index: Int)
     internal open fun removeChildrenFrom(index: Int)
 }
+
+internal val textNodeType: NodeType = stringToNodeType("magneton.nodes.Text")
 
 expect class Text(data: String) : Node {
     var data: String

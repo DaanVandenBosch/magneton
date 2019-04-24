@@ -6,6 +6,8 @@ actual abstract class Node {
     internal actual var context: Context? = null
     internal actual var isMounted: Boolean = false
 
+    actual abstract val nodeType: NodeType
+
     actual open fun didMount() {}
     actual open fun willUnmount() {}
 }
@@ -34,4 +36,6 @@ actual abstract class Parent : Node() {
     }
 }
 
-actual class Text actual constructor(actual var data: String) : Node()
+actual class Text actual constructor(actual var data: String) : Node() {
+    override val nodeType: NodeType = textNodeType
+}

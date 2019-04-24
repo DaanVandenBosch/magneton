@@ -43,19 +43,22 @@ actual abstract class Element : Parent() {
     }
 }
 
-actual open class HTMLElement actual constructor(actual val tagName: String) : Element() {
+actual open class HTMLElement actual constructor(
+        actual override val nodeType: NodeType,
+        actual val tagName: String
+) : Element() {
     override val domNode = document.createElement(tagName) as DomHTMLElement
 }
 
-actual class HTMLAnchorElement actual constructor(tagName: String) : HTMLElement(tagName) {
+actual class HTMLAnchorElement actual constructor() : HTMLElement(HTML_ELEMENT_TYPE_A, "A") {
     override val domNode = super.domNode as DomHTMLAnchorElement
 }
 
-actual class HTMLImageElement actual constructor(tagName: String) : HTMLElement(tagName) {
+actual class HTMLImageElement actual constructor() : HTMLElement(HTML_ELEMENT_TYPE_IMG, "img") {
     override val domNode = super.domNode as DomHTMLImageElement
 }
 
-actual class HTMLInputElement actual constructor(tagName: String) : HTMLElement(tagName) {
+actual class HTMLInputElement actual constructor() : HTMLElement(HTML_ELEMENT_TYPE_INPUT, "input") {
     override val domNode = super.domNode as DomHTMLInputElement
 
     override fun setAttribute(key: String, value: String) {

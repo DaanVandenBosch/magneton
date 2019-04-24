@@ -12,6 +12,7 @@ import org.w3c.dom.HTMLSpanElement as DomHTMLSpanElement
 actual abstract class Element : Parent() {
     abstract override val domNode: DomElement
 
+    // TODO: use native map.
     private val _attributes: MutableMap<String, Any?> = mutableMapOf()
     actual val attributes: Map<String, Any?> = _attributes
 

@@ -1,5 +1,6 @@
 package magneton.observable
 
+import magneton.unsafeCast
 import kotlin.reflect.KProperty
 
 class ComputedValue<T>(
@@ -29,8 +30,7 @@ class ComputedValue<T>(
             initialized = true
         }
 
-        @Suppress("UNCHECKED_CAST")
-        return value as T
+        return value.unsafeCast()
     }
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T =

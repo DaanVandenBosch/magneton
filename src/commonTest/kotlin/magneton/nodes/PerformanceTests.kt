@@ -5,6 +5,8 @@ import magneton.testutil.Performance
 import kotlin.test.Test
 
 class PerformanceTests {
+    // Test run by dvb on 2019-04-24 Chrome, Time taken: 294ms
+    // Test run by dvb on 2019-04-24 Firefox, Time taken: 1628ms
     @Test
     fun render_component_with_10_000_child_elements() {
         val cmp = object : Component() {
@@ -26,6 +28,8 @@ class PerformanceTests {
         println("Render component with 10.000 child elements 100 times.\nTime taken: ${time}ms")
     }
 
+    // Test run by dvb on 2019-04-24 Chrome, Time taken: 242ms
+    // Test run by dvb on 2019-04-24 Firefox, Time taken: 1042ms
     @Test
     fun render_component_with_10_000_child_components() {
         class Inner : Component() {

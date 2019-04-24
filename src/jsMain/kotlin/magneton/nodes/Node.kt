@@ -3,15 +3,16 @@ package magneton.nodes
 import magneton.Context
 import org.w3c.dom.get
 import kotlin.browser.document
+import kotlin.reflect.KClass
 import org.w3c.dom.Node as DomNode
 
 actual abstract class Node {
+    internal actual val kClass: KClass<*> = this::class
     internal actual var context: Context? = null
     internal actual var isMounted: Boolean = false
+    internal actual abstract val nodeType: NodeType
 
     abstract val domNode: DomNode?
-
-    actual abstract val nodeType: NodeType
 
     internal var internalParent: Parent? = null
     val parent: Parent? get() = internalParent
@@ -63,9 +64,8 @@ actual abstract class Parent : Node() {
 }
 
 actual class Text actual constructor(data: String) : Node() {
-    override val domNode = document.createTextNode(data)
-
     override val nodeType: NodeType = textNodeType
+    override val domNode = document.createTextNode(data)
 
     actual var data: String = data
         set(value) {

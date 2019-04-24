@@ -2,6 +2,7 @@ package magneton.nodes
 
 import magneton.style.CSSClassRule
 import magneton.style.InlineCSSStyleDeclaration
+import magneton.unsafeCast
 
 interface ElementAttributeValue {
     fun toStringValue(): String
@@ -54,38 +55,37 @@ private fun <T : Element> Parent.addElement(
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    node as T
+    val element = node.unsafeCast<T>()
 
     try {
         cssClass?.let {
             ctx.styleSheetRegistry.register(it.styleSheet)
-            node.className = it.selector.uniqueName
+            element.className = it.selector.uniqueName
         }
 
-        block?.invoke(node)
+        block?.invoke(element)
 
         // Clean up implicitly removed attributes and child nodes.
         val state = ctx.nodeState
 
-        for (key in node.attributes.keys) {
+        for (key in element.attributes.keys) {
             if (key !in state.updatedAttributes) {
-                node.removeAttribute<Any>(key)
+                element.removeAttribute<Any>(key)
             }
         }
 
         if (isMounted) {
-            for (i in state.childIndex..node.children.lastIndex) {
-                notifyWillUnmount(node.children[i])
+            for (i in state.childIndex..element.children.lastIndex) {
+                notifyWillUnmount(element.children[i])
             }
         }
 
-        node.removeChildrenFrom(state.childIndex)
+        element.removeChildrenFrom(state.childIndex)
     } finally {
         ctx.nodeState = prevState
     }
 
-    return node
+    return element
 }
 
 internal val HTML_ELEMENT_TYPE_DIV = stringToNodeType("magneton.nodes.HTMLElement#DIV")

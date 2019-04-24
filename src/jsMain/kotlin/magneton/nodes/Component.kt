@@ -5,9 +5,9 @@ import org.w3c.dom.Node as DomNode
 
 // TODO: share code with JVM implementation.
 actual abstract class Component : Parent() {
-    override val domNode: DomNode? get() = children.firstOrNull()?.domNode
-
     actual override val nodeType: NodeType = componentNodeType
+
+    override val domNode: DomNode? get() = children.firstOrNull()?.domNode
 
     internal actual var disposer: ReactionDisposer? = null
 

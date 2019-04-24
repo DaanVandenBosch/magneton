@@ -1,12 +1,13 @@
 package magneton.nodes
 
 import magneton.Context
+import kotlin.reflect.KClass
 
 actual abstract class Node {
+    internal actual val kClass: KClass<*> = this::class
     internal actual var context: Context? = null
     internal actual var isMounted: Boolean = false
-
-    actual abstract val nodeType: NodeType
+    internal actual abstract val nodeType: NodeType
 
     actual open fun didMount() {}
     actual open fun willUnmount() {}

@@ -2,6 +2,7 @@ package magneton.nodes
 
 import magneton.observable.ReactionDisposer
 import magneton.observable.reaction
+import magneton.unsafeCast
 import kotlin.reflect.KClass
 
 internal val componentNodeType: NodeType = stringToNodeType("magneton.nodes.Component")
@@ -25,9 +26,8 @@ fun <T : Component> Parent.component(
     val index = ctx.nodeState.childIndex++
     val node = children.getOrNull(index)
 
-    if (node != null && node::class == componentClass) {
-        @Suppress("UNCHECKED_CAST")
-        return node as T
+    if (node != null && node.kClass == componentClass) {
+        return node.unsafeCast()
     } else {
         // TODO: optimize with replace
         if (node != null) {

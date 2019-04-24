@@ -1,12 +1,14 @@
 package magneton.nodes
 
 import magneton.Context
+import kotlin.reflect.KClass
 
 @DslMarker
 annotation class NodeDslMarker
 
 @NodeDslMarker
 expect abstract class Node() {
+    internal val kClass: KClass<*>
     internal var context: Context?
 
     /**
@@ -18,7 +20,7 @@ expect abstract class Node() {
      * This is a performance improvement over using KClasses to compare nodes. Looking up an
      * objects KClass is very slow in JS.
      */
-    abstract val nodeType: NodeType
+    internal abstract val nodeType: NodeType
 
     /**
      * Called after the node is first rendered and added to the DOM.

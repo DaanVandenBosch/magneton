@@ -1,5 +1,7 @@
 package magneton.style
 
+import magneton.unsafeCast
+
 sealed class CSSSelector {
     abstract val css: String
 
@@ -42,8 +44,7 @@ sealed class CSSSelector {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false
-        other as CSSSelector
-        if (css != other.css) return false
+        if (css != other.unsafeCast<CSSSelector>().css) return false
         return true
     }
 

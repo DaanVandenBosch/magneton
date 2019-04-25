@@ -1,5 +1,6 @@
 package magneton.style
 
+import magneton.unsafeCast
 import kotlin.reflect.KProperty
 
 open class StyleSheet {
@@ -146,7 +147,7 @@ open class StyleSheet {
             selector: S,
             create: (S) -> R
     ): R =
-            rules.getOrPut(selector) { create(selector) } as R
+            rules.getOrPut(selector) { create(selector) }.unsafeCast()
 
     internal fun <S : CSSSelector> getOrPutRule(selector: S): CSSRule =
             getOrPutRule(selector, { CSSRule(this@StyleSheet, it) })

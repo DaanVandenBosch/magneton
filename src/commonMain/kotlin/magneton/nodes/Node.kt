@@ -1,6 +1,7 @@
 package magneton.nodes
 
 import magneton.Context
+import magneton.unsafeCast
 import kotlin.reflect.KClass
 
 @DslMarker
@@ -23,6 +24,11 @@ expect abstract class Node() {
     internal abstract val nodeType: NodeType
 
     /**
+     * Performance optimized way of checking whether a node is a subclass of [Parent].
+     */
+    open val isParent: Boolean
+
+    /**
      * Called after the node is first rendered and added to the DOM.
      */
     open fun didMount()
@@ -34,6 +40,8 @@ expect abstract class Node() {
 }
 
 expect abstract class Parent() : Node {
+    override val isParent: Boolean
+
     val children: List<Node>
 
     internal open fun addChild(child: Node)
@@ -51,23 +59,24 @@ expect class Text(data: String) : Node {
 
 fun Parent.text(data: String): Text {
     val index = context!!.nodeState.childIndex++
-    var node = children.getOrNull(index)
+    val node = children.getOrNull(index)
+    val text: Text
 
-    if (node == null || node::class != Text::class) {
+    if (node == null || node.nodeType != textNodeType) {
         // TODO: is replaceChild faster than removeChild + appendChild in DOM?
         if (node != null) {
             removeChildAt(index)
         }
 
-        node = Text(data)
-        node.context = context
-        addChild(index, node)
+        text = Text(data)
+        text.context = context
+        addChild(index, text)
     } else {
-        node as Text
-        node.data = data
+        text = node.unsafeCast()
+        text.data = data
     }
 
-    return node
+    return text
 }
 
 internal fun notifyDidMount(node: Node) {
@@ -76,8 +85,8 @@ internal fun notifyDidMount(node: Node) {
     node.isMounted = true
     node.didMount()
 
-    if (node is Parent) {
-        node.children.forEach(::notifyDidMount)
+    if (node.isParent) {
+        node.unsafeCast<Parent>().children.forEach(::notifyDidMount)
     }
 }
 
@@ -86,8 +95,8 @@ internal fun notifyWillUnmount(node: Node) {
 
     node.willUnmount()
 
-    if (node is Parent) {
-        node.children.forEach(::notifyWillUnmount)
+    if (node.isParent) {
+        node.unsafeCast<Parent>().children.forEach(::notifyWillUnmount)
     }
 
     node.isMounted = false

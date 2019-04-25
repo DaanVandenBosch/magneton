@@ -7,11 +7,19 @@ import kotlin.reflect.KClass
 import org.w3c.dom.Node as DomNode
 
 actual abstract class Node {
-    internal actual val kClass: KClass<*> = this::class
+    private var _kClass: KClass<*>? = null
+    internal actual val kClass: KClass<*>
+        get() {
+            if (_kClass == null) {
+                _kClass = this::class
+            }
+            return _kClass.unsafeCast<KClass<*>>()
+        }
     internal actual var context: Context? = null
     internal actual var isMounted: Boolean = false
     internal actual abstract val nodeType: NodeType
 
+    actual open val isParent: Boolean = false
     abstract val domNode: DomNode?
 
     internal var internalParent: Parent? = null
@@ -23,6 +31,8 @@ actual abstract class Node {
 
 // TODO: share code with JVM implementation
 actual abstract class Parent : Node() {
+    actual override val isParent: Boolean = true
+
     private val _children: MutableList<Node> = mutableListOf()
     actual val children: List<Node> = _children
 

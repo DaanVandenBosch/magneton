@@ -32,7 +32,11 @@ fun <T : Component> Parent.component(
         // TODO: optimize with replace
         if (node != null) {
             notifyWillUnmount(node)
-            (node as? Component)?.disposer?.dispose()
+
+            if (node.nodeType == componentNodeType) {
+                node.unsafeCast<Component>().disposer?.dispose()
+            }
+
             removeChildAt(index)
         }
 

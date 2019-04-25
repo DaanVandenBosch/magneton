@@ -8,6 +8,7 @@ actual abstract class Node {
     internal actual var context: Context? = null
     internal actual var isMounted: Boolean = false
     internal actual abstract val nodeType: NodeType
+    actual open val isParent: Boolean = false
 
     actual open fun didMount() {}
     actual open fun willUnmount() {}
@@ -15,6 +16,8 @@ actual abstract class Node {
 
 // TODO: share code with JS implementation
 actual abstract class Parent : Node() {
+    actual override val isParent: Boolean = true
+
     private val _children: MutableList<Node> = mutableListOf()
     actual val children: List<Node> = _children
 

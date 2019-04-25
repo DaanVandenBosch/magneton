@@ -12,7 +12,7 @@ private class ActionState {
     }
 }
 
-private class DerivationState {
+internal class DerivationState {
     val observedObservables: MutableSet<Observable<*>> = mutableSetOf()
 
     companion object {
@@ -33,6 +33,8 @@ internal fun Observable<*>.reportChanged() {
     }
 }
 
+internal expect inline fun removeOldDependencies(state: DerivationState, derivation: Derivation)
+
 internal fun updateDerivation(derivation: Derivation) {
     val newState = DerivationState()
     val prevState = DerivationState.Global.set(newState)
@@ -44,16 +46,7 @@ internal fun updateDerivation(derivation: Derivation) {
         DerivationState.Global.restore(prevState)
 
         // Update dependencies list.
-        val iter = derivation.dependencies.iterator()
-
-        while (iter.hasNext()) {
-            val dependency = iter.next()
-
-            if (dependency !in newState.observedObservables) {
-                iter.remove()
-                dependency.derivations.remove(derivation)
-            }
-        }
+        removeOldDependencies(newState, derivation)
 
         newState.observedObservables.forEach { dependency ->
             if (dependency !in derivation.dependencies) {

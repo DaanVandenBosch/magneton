@@ -1,11 +1,13 @@
 package magneton.observable
 
+import magneton.FastSet
+
 interface ReactionDisposer {
     fun dispose()
 }
 
 class Reaction(private val f: () -> Unit) : ReactionDisposer, Derivation {
-    override val dependencies: MutableList<Observable<*>> = mutableListOf()
+    override val dependencies: FastSet<Observable<*>> = FastSet()
     override var lastActionRunId: Int = -1
 
     init {

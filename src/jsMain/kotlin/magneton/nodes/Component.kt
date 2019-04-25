@@ -23,7 +23,6 @@ actual abstract class Component : Parent() {
 
     override fun domAddChild(index: Int, childDomNode: DomNode) {
         parent?.let { parent ->
-            // TODO: optimize indexOf
             parent.domAddChild(parent.children.indexOf(this), childDomNode)
         }
     }

@@ -1,5 +1,6 @@
 package magneton.observable
 
+import magneton.FastSet
 import magneton.unsafeCast
 import kotlin.reflect.KProperty
 
@@ -9,9 +10,9 @@ class ComputedValue<T>(
     private var initialized = false
     private var value: T? = null
 
-    override val derivations: MutableList<Derivation> = mutableListOf()
+    override val derivations: MutableList<Derivation> = ArrayList()
     override var lastActionRunId: Int = -1
-    override val dependencies: MutableList<Observable<*>> = mutableListOf()
+    override val dependencies: FastSet<Observable<*>> = FastSet()
 
     override fun update() {
         val value = block()

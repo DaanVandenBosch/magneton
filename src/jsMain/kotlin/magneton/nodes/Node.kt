@@ -27,6 +27,7 @@ actual abstract class Node {
 
     actual open fun didMount() {}
     actual open fun willUnmount() {}
+    internal actual open fun internalWillUnmount() {}
 }
 
 // TODO: share code with JVM implementation

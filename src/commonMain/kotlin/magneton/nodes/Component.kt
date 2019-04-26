@@ -16,6 +16,8 @@ expect abstract class Component() : Parent {
      * Called right before the component is first added to the node tree and after each change to one of its observable dependencies.
      */
     abstract fun render(): Node?
+
+    override fun internalWillUnmount()
 }
 
 fun <T : Component> Parent.component(
@@ -32,11 +34,6 @@ fun <T : Component> Parent.component(
         // TODO: optimize with replace
         if (node != null) {
             notifyWillUnmount(node)
-
-            if (node.nodeType == componentNodeType) {
-                node.unsafeCast<Component>().disposer?.dispose()
-            }
-
             removeChildAt(index)
         }
 

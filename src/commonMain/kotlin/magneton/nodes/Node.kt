@@ -37,6 +37,8 @@ expect abstract class Node() {
      * Called before the node is removed from the DOM.
      */
     open fun willUnmount()
+
+    internal open fun internalWillUnmount()
 }
 
 expect abstract class Parent() : Node {
@@ -99,5 +101,6 @@ internal fun notifyWillUnmount(node: Node) {
         node.unsafeCast<Parent>().children.forEach(::notifyWillUnmount)
     }
 
+    node.internalWillUnmount()
     node.isMounted = false
 }

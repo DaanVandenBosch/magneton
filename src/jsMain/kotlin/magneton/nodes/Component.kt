@@ -26,4 +26,8 @@ actual abstract class Component : Parent() {
             parent.domAddChild(parent.children.indexOf(this), childDomNode)
         }
     }
+
+    actual override fun internalWillUnmount() {
+        disposer?.dispose()
+    }
 }

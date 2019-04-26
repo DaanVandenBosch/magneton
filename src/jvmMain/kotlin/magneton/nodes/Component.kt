@@ -16,4 +16,8 @@ actual abstract class Component : Parent() {
 
         super.addChild(index, child)
     }
+
+    actual override fun internalWillUnmount() {
+        disposer?.dispose()
+    }
 }

@@ -2,10 +2,7 @@ package magneton.nodes
 
 import magneton.observable.observable
 import magneton.render
-import kotlin.test.Test
-import kotlin.test.assertNotSame
-import kotlin.test.assertSame
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class ComponentTests {
     @Test
@@ -88,5 +85,82 @@ class ComponentTests {
 
         assertTrue((cmp.children[0] as Parent).children[0] is Inner2Component)
         assertNotSame(innerCmp, (cmp.children[0] as Parent).children[0])
+    }
+
+    @Test
+    fun component_reactions_should_be_correctly_disposed() {
+        // Wrap variables in an object to work around compiler bug.
+        val vars = object {
+            var x by observable("a")
+            var inner1Renders = 0
+            var inner2Renders = 0
+        }
+
+        class Inner1 : Component() {
+            override fun render() = span { text(vars.x); vars.inner1Renders++ }
+        }
+
+        class Inner2 : Component() {
+            override fun render() = span { text(vars.x); vars.inner2Renders++ }
+        }
+
+        var useInner by observable(1)
+
+        val cmp = object : Component() {
+            override fun render() = div {
+                if (useInner == 1) component(::Inner1)
+                else if (useInner == 2) component(::Inner2)
+            }
+        }
+        render(cmp)
+
+        assertEquals(1, vars.inner1Renders)
+        assertEquals(0, vars.inner2Renders)
+
+        useInner = 2
+
+        assertEquals(1, vars.inner1Renders)
+        assertEquals(1, vars.inner2Renders)
+
+        vars.x = "b"
+
+        assertEquals(1, vars.inner1Renders)
+        assertEquals(2, vars.inner2Renders)
+
+        useInner = -1
+        vars.x = "c"
+
+        assertEquals(1, vars.inner1Renders)
+        assertEquals(2, vars.inner2Renders)
+    }
+
+    @Test
+    fun component_reactions_should_be_correctly_disposed_when_replaced_with_element() {
+        // Wrap variables in an object to work around compiler bug.
+        val vars = object {
+            var x by observable("a")
+            var innerRenders = 0
+        }
+
+        class Inner : Component() {
+            override fun render() = span { text(vars.x); vars.innerRenders++ }
+        }
+
+        var useInner by observable(true)
+
+        val cmp = object : Component() {
+            override fun render() = div {
+                if (useInner) component(::Inner)
+                else span()
+            }
+        }
+        render(cmp)
+
+        assertEquals(1, vars.innerRenders)
+
+        useInner = false
+        vars.x = "b"
+
+        assertEquals(1, vars.innerRenders)
     }
 }

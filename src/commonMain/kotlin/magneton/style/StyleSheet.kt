@@ -25,6 +25,7 @@ open class StyleSheet {
     val h5 by cssElement()
     val h6 by cssElement()
     val input by cssElement()
+    val img by cssElement()
     val path by cssElement()
 
     val hover by cssPseudoClass()

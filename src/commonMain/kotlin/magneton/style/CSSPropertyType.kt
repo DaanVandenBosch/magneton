@@ -9,8 +9,8 @@ enum class Position(override val css: String) : StylePropertyType {
 }
 
 enum class Display(override val css: String) : StylePropertyType {
-    None("none"), Block("block"), RunIn("run-in"), Flex("flex"), Inline("inline"),
-    InlineBlock("inline-block"), InlineFlex("inline-flex")
+    None("none"), Block("block"), RunIn("run-in"), Flex("flex"), Grid("grid"), Inline("inline"),
+    InlineBlock("inline-block"), InlineFlex("inline-flex"), InlineGrid("inline-grid")
 }
 
 sealed class FontFamily : StylePropertyType {
@@ -37,7 +37,8 @@ enum class StyleUnit(override val css: String) : StylePropertyType {
 
 private val defaultUnit = StyleUnit.Px
 
-class Length private constructor(override val css: String) : StylePropertyType {
+class Length private constructor(override val css: String) :
+        StylePropertyType, GridTrackValue, GridFixedSize {
     constructor(number: Number, unit: StyleUnit) : this("$number${unit.css}")
     constructor(number: Number) : this(number, defaultUnit)
 
@@ -117,6 +118,37 @@ enum class FlexDirection(override val css: String) : StylePropertyType {
 enum class FlexWrap(override val css: String) : StylePropertyType {
     Nowrap("nowrap"), Wrap("wrap"), WrapReverse("wrap-reverse")
 }
+
+interface GridTrackValue : StylePropertyType {
+    companion object {
+        fun repeat(columns: Int, vararg sizes: GridFixedSize) =
+                RepeatedGridTrackValue(RepeatedGridTrackValueType.Fixed, columns, *sizes)
+
+        fun repeatAutoFill(vararg sizes: GridFixedSize) =
+                RepeatedGridTrackValue(RepeatedGridTrackValueType.AutoFill, -1, *sizes)
+
+        fun repeatAutoFit(vararg sizes: GridFixedSize) =
+                RepeatedGridTrackValue(RepeatedGridTrackValueType.AutoFit, -1, *sizes)
+    }
+}
+
+enum class RepeatedGridTrackValueType {
+    Fixed, AutoFill, AutoFit
+}
+
+class RepeatedGridTrackValue(
+        val type: RepeatedGridTrackValueType,
+        val columns: Int,
+        vararg val sizes: GridFixedSize
+) : GridTrackValue {
+    override val css = "repeat(" + when (type) {
+        RepeatedGridTrackValueType.Fixed -> columns.toString()
+        RepeatedGridTrackValueType.AutoFill -> "auto-fill"
+        RepeatedGridTrackValueType.AutoFit -> "auto-fit"
+    } + ", " + sizes.joinToString(", ") { it.css } + ")"
+}
+
+interface GridFixedSize : StylePropertyType
 
 enum class JustifyContent(override val css: String) : StylePropertyType {
     Center("center"), Start("start"), End("end")

@@ -32,14 +32,21 @@ abstract class CSSStyleDeclaration {
     var paddingBottom: Length? by prop("padding-bottom")
     var paddingLeft: Length? by prop("padding-left")
     var paddingRight: Length? by prop("padding-right")
+    var padding: Length? by prop("padding")
     var borderRadius: Length? by prop("border-radius")
     var marginTop: Length? by prop("margin-top")
     var marginBottom: Length? by prop("margin-bottom")
     var marginLeft: Length? by prop("margin-left")
     var marginRight: Length? by prop("margin-right")
+    var margin: Length? by prop("margin")
     var flexGrow: Int? by prop("flex-grow")
     var flexDirection: FlexDirection? by prop("flex-direction")
     var flexWrap: FlexWrap? by prop("flex-wrap")
+    var gridTemplateColumns: List<GridTrackValue>? by prop("grid-template-columns")
+    var gridTemplateRows: List<GridTrackValue>? by prop("grid-template-rows")
+    var columnGap: Length? by prop("grid-column-gap")
+    var rowGap: Length? by prop("grid-row-gap")
+    var gap: Length? by prop("grid-gap")
     var justifyContent: JustifyContent? by prop("justify-content")
     var alignItems: AlignItems? by prop("align-items")
     var userSelect: UserSelect? by prop("user-select", "webkit")
@@ -60,25 +67,11 @@ abstract class CSSStyleDeclaration {
     var animationPlayState: AnimationPlayState? by prop("animation-play-state")
     var fill: Color? by prop("fill")
 
-    fun padding(all: Length) {
-        paddingTop = all
-        paddingBottom = all
-        paddingLeft = all
-        paddingRight = all
-    }
-
     fun padding(vertical: Length, horizontal: Length) {
         paddingTop = vertical
         paddingBottom = vertical
         paddingLeft = horizontal
         paddingRight = horizontal
-    }
-
-    fun margin(all: Length) {
-        marginTop = all
-        marginBottom = all
-        marginLeft = all
-        marginRight = all
     }
 
     fun margin(vertical: Length, horizontal: Length) {
